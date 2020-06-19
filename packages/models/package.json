@@ -1,0 +1,32 @@
+{
+  "name": "@packages/models",
+  "version": "0.0.1",
+  "description": "Wrappers around db objects",
+  "author": "Daniel Merrill (@dmerrill6)",
+  "license": "MIT",
+  "main": "dist/index",
+  "typings": "dist/index",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
+    "test": "jest",
+    "lint": "eslint --ext ts,js ./src"
+  },
+  "devDependencies": {
+    "@packages/devtools": "^0.0.1",
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^12.12.21",
+    "typescript": "^3.7.3"
+  },
+  "dependencies": {
+    "@packages/crypto": "^0.0.1",
+    "aws-sdk": "^2.593.0",
+    "dynamodb-update-expression": "^0.1.21",
+    "lodash": "^4.17.15"
+  },
+  "private": true
+}

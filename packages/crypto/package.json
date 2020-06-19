@@ -1,0 +1,28 @@
+{
+  "name": "@packages/crypto",
+  "version": "0.0.1",
+  "description": "Crypto utils",
+  "author": "Daniel Merrill (@dmerrill6)",
+  "license": "MIT",
+  "main": "dist/index",
+  "typings": "dist/index",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
+    "test": "jest",
+    "lint": "eslint --ext ts,js ./src"
+  },
+  "devDependencies": {
+    "@packages/devtools": "^0.0.1",
+    "@types/node": "^12.12.21",
+    "typescript": "^3.7.3"
+  },
+  "dependencies": {
+    "sha3": "^2.1.2"
+  },
+  "private": true
+}

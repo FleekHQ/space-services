@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IdentityModel createIdentity creates an identity 1`] = `
+Object {
+  "address": "0x0b015d4e6b3f0aeea975efa7287d3daadd0c",
+  "gs1pk": "identity",
+  "gs1sk": "0x0b015d4e6b3f0aeea975efa7287d3daadd0c",
+  "pk": "identity",
+  "publicKey": "080112200c0f5e55f4f32af31bf39e1a3703adee3d0141f84f752c1a6522fb358f9c3ac8",
+  "sk": "test-user",
+  "username": "test-user",
+}
+`;

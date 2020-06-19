@@ -1,0 +1,68 @@
+service:
+  name: ${self:provider.appName}-auth
+
+plugins:
+  - serverless-jetpack
+
+custom:
+  jetpack:
+    base: "../../"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-west-2
+  appName: space
+  environment:
+    DOMAIN_SUFFIX: space-auth
+
+resources:
+  Resources:
+    serviceUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:provider.appName}-user-pool-${opt:stage, self:provider.stage}
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+    serviceUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: ${self:provider.appName}-user-pool-client-${opt:stage, self:provider.stage}
+        AllowedOAuthFlows:
+          - implicit
+        AllowedOAuthFlowsUserPoolClient: true
+        AllowedOAuthScopes:
+          - phone
+          - email
+          - openid
+          - profile
+          - aws.cognito.signin.user.admin
+        UserPoolId:
+          Ref: serviceUserPool
+        CallbackURLs:
+          - https://localhost:3000
+        ExplicitAuthFlows:
+          - ALLOW_USER_SRP_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        GenerateSecret: false
+        SupportedIdentityProviders:
+          - COGNITO
+    serviceUserPoolDomain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        UserPoolId:
+          Ref: serviceUserPool
+        Domain: ${self:provider.appName}-user-pool-domain-${opt:stage, self:provider.stage}-${self:provider.environment.DOMAIN_SUFFIX}
+  Outputs:
+    serviceUserPoolOutput:
+      Value:
+        "Ref": serviceUserPool
+      Export:
+        Name: ServiceUserPool-${opt:stage, self:provider.stage}
+    serviceUserPoolClientOutput:
+      Value:
+        "Ref": serviceUserPoolClient
+      Export:
+        Name: ServiceUserPoolClient-${opt:stage, self:provider.stage}

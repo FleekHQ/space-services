@@ -1,0 +1,319 @@
+{
+  "service": {
+    "service": "space-auth",
+    "serviceObject": {
+      "name": "space-auth"
+    },
+    "provider": {
+      "stage": "dev",
+      "variableSyntax": "\\${([^{}]+?)}",
+      "name": "aws",
+      "runtime": "nodejs12.x",
+      "region": "us-west-2",
+      "appName": "space",
+      "environment": {
+        "DOMAIN_SUFFIX": "space-auth"
+      },
+      "httpApi": null,
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "serviceUserPool": {
+            "Type": "AWS::Cognito::UserPool",
+            "Properties": {
+              "UserPoolName": "space-user-pool-dev",
+              "UsernameAttributes": [
+                "email"
+              ],
+              "AutoVerifiedAttributes": [
+                "email"
+              ]
+            }
+          },
+          "serviceUserPoolClient": {
+            "Type": "AWS::Cognito::UserPoolClient",
+            "Properties": {
+              "ClientName": "space-user-pool-client-dev",
+              "AllowedOAuthFlows": [
+                "implicit"
+              ],
+              "AllowedOAuthFlowsUserPoolClient": true,
+              "AllowedOAuthScopes": [
+                "phone",
+                "email",
+                "openid",
+                "profile",
+                "aws.cognito.signin.user.admin"
+              ],
+              "UserPoolId": {
+                "Ref": "serviceUserPool"
+              },
+              "CallbackURLs": [
+                "https://localhost:3000"
+              ],
+              "ExplicitAuthFlows": [
+                "ALLOW_USER_SRP_AUTH",
+                "ALLOW_REFRESH_TOKEN_AUTH"
+              ],
+              "GenerateSecret": false,
+              "SupportedIdentityProviders": [
+                "COGNITO"
+              ]
+            }
+          },
+          "serviceUserPoolDomain": {
+            "Type": "AWS::Cognito::UserPoolDomain",
+            "Properties": {
+              "UserPoolId": {
+                "Ref": "serviceUserPool"
+              },
+              "Domain": "space-user-pool-domain-dev-space-auth"
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          },
+          "serviceUserPoolOutput": {
+            "Value": {
+              "Ref": "serviceUserPool"
+            },
+            "Export": {
+              "Name": "ServiceUserPool-dev"
+            }
+          },
+          "serviceUserPoolClientOutput": {
+            "Value": {
+              "Ref": "serviceUserPoolClient"
+            },
+            "Export": {
+              "Name": "ServiceUserPoolClient-dev"
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      }
+    },
+    "custom": {
+      "jetpack": {
+        "base": "../../"
+      }
+    },
+    "plugins": [
+      "serverless-jetpack"
+    ],
+    "pluginsData": {},
+    "functions": {},
+    "resources": {
+      "Resources": {
+        "serviceUserPool": {
+          "Type": "AWS::Cognito::UserPool",
+          "Properties": {
+            "UserPoolName": "space-user-pool-dev",
+            "UsernameAttributes": [
+              "email"
+            ],
+            "AutoVerifiedAttributes": [
+              "email"
+            ]
+          }
+        },
+        "serviceUserPoolClient": {
+          "Type": "AWS::Cognito::UserPoolClient",
+          "Properties": {
+            "ClientName": "space-user-pool-client-dev",
+            "AllowedOAuthFlows": [
+              "implicit"
+            ],
+            "AllowedOAuthFlowsUserPoolClient": true,
+            "AllowedOAuthScopes": [
+              "phone",
+              "email",
+              "openid",
+              "profile",
+              "aws.cognito.signin.user.admin"
+            ],
+            "UserPoolId": {
+              "Ref": "serviceUserPool"
+            },
+            "CallbackURLs": [
+              "https://localhost:3000"
+            ],
+            "ExplicitAuthFlows": [
+              "ALLOW_USER_SRP_AUTH",
+              "ALLOW_REFRESH_TOKEN_AUTH"
+            ],
+            "GenerateSecret": false,
+            "SupportedIdentityProviders": [
+              "COGNITO"
+            ]
+          }
+        },
+        "serviceUserPoolDomain": {
+          "Type": "AWS::Cognito::UserPoolDomain",
+          "Properties": {
+            "UserPoolId": {
+              "Ref": "serviceUserPool"
+            },
+            "Domain": "space-user-pool-domain-dev-space-auth"
+          }
+        }
+      },
+      "Outputs": {
+        "serviceUserPoolOutput": {
+          "Value": {
+            "Ref": "serviceUserPool"
+          },
+          "Export": {
+            "Name": "ServiceUserPool-dev"
+          }
+        },
+        "serviceUserPoolClientOutput": {
+          "Value": {
+            "Ref": "serviceUserPoolClient"
+          },
+          "Export": {
+            "Name": "ServiceUserPoolClient-dev"
+          }
+        }
+      }
+    },
+    "serviceFilename": "serverless.yaml",
+    "app": "space-app",
+    "org": "danielterminal",
+    "layers": {},
+    "isDashboardMonitoringPreconfigured": false,
+    "appUid": "hfFtJg34YWf8BRqjtG",
+    "orgUid": "5rBZltHQxV2xGYtNMt"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/space-auth/dev/1592349588018-2020-06-16T23:19:48.018Z",
+    "artifact": ""
+  }
+}

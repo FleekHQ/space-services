@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "declaration": true,
+        "noImplicitAny": true,
+        "esModuleInterop": true,
+        // enable the following line once all projects are strict null ready
+        //"strictNullChecks": true,
+        "module": "commonjs",
+        "target": "es6",
+        "skipLibCheck": true,
+        "lib": [
+            "es6"
+        ]
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
