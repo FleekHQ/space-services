@@ -23,15 +23,16 @@ exports.getIdentityByUsername = (event) => __awaiter(void 0, void 0, void 0, fun
         console.log('got event', event);
         const { username } = event.pathParameters;
         const identity = yield identityDb.getIdentityByUsername(username);
+        delete identity.createdAt;
         return identity;
     }));
     return result;
 });
 exports.getIdentityByAddress = (event) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield apitools_1.processRequest(() => __awaiter(void 0, void 0, void 0, function* () {
-        console.log('got event', event);
         const { address } = event.pathParameters;
         const identity = yield identityDb.getIdentityByAddress(address);
+        delete identity.createdAt;
         return identity;
     }));
     return result;

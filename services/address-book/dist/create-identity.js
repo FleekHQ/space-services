@@ -22,6 +22,7 @@ exports.createIdentity = (event) => __awaiter(void 0, void 0, void 0, function* 
     const result = yield apitools_1.processRequest(() => __awaiter(void 0, void 0, void 0, function* () {
         const request = JSON.parse(event.body);
         const identity = yield identityDb.createIdentity(request);
+        delete identity.createdAt;
         return identity;
     }), {
         successCode: 201,

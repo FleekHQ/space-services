@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { IdentityModel } from '@packages/models';
 import { processRequest } from '@packages/apitools';
+import { IdentityResult } from './types';
 
 if (!process?.env?.ENV) {
   throw new Error('ENV variable not set');
@@ -13,14 +14,17 @@ const identityDb = new IdentityModel(STAGE);
 export const getIdentityByUsername = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const result = await processRequest(async () => {
-    console.log('got event', event);
+  const result = await processRequest(
+    async (): Promise<IdentityResult> => {
+      console.log('got event', event);
 
-    const { username } = event.pathParameters;
+      const { username } = event.pathParameters;
 
-    const identity = await identityDb.getIdentityByUsername(username);
-    return identity;
-  });
+      const identity = await identityDb.getIdentityByUsername(username);
+      delete identity.createdAt;
+      return identity;
+    }
+  );
 
   return result;
 };
@@ -28,14 +32,15 @@ export const getIdentityByUsername = async (
 export const getIdentityByAddress = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const result = await processRequest(async () => {
-    console.log('got event', event);
+  const result = await processRequest(
+    async (): Promise<IdentityResult> => {
+      const { address } = event.pathParameters;
 
-    const { address } = event.pathParameters;
-
-    const identity = await identityDb.getIdentityByAddress(address);
-    return identity;
-  });
+      const identity = await identityDb.getIdentityByAddress(address);
+      delete identity.createdAt;
+      return identity;
+    }
+  );
 
   return result;
 };

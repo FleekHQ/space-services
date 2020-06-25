@@ -17,8 +17,8 @@
     "publicKey": {
       "type": "string",
       "title": "Public Key",
-      "description": "Public key generated from ed25519 algorithm (without 0x prefix, 72 characters long)",
-      "pattern": "^[a-fA-F\\d]{72}$"
+      "description": "Public key generated from ed25519 algorithm (without 0x prefix, 64 characters long)",
+      "pattern": "^[a-fA-F\\d]{64}$"
     }
   }
 }
