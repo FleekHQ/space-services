@@ -5,9 +5,8 @@ import { Identity } from '../src/identity/types';
 import { ValidationError, NotFoundError } from '../src/errors';
 
 const existingIdentityMock: Identity = {
-  address: '0x0b015d4e6b3f0aeea975efa7287d3daadd0c',
-  publicKey:
-    '080112200c0f5e55f4f32af31bf39e1a3703adee3d0141f84f752c1a6522fb358f9c3ac8',
+  address: '0xd606f05a2a980f58737aa913553c8d6eac8b',
+  publicKey: '67730a6678566ead5911d71304854daddb1fe98a396551a4be01de65da01f3a9',
   username: 'test-user',
   createdAt: '2020-06-18T21:04:48.141Z',
 };
