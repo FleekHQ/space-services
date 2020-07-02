@@ -1,0 +1,36 @@
+{
+  "name": "textile-hub-auth",
+  "version": "0.0.1",
+  "description": "Log in a user to the hub",
+  "author": "Daniel Merrill (@dmerrill6)",
+  "license": "MIT",
+  "main": "dist/index",
+  "typings": "dist/index",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
+    "test": "jest",
+    "lint": "eslint --ext ts,js ./src"
+  },
+  "dependencies": {
+    "@packages/apitools": "^0.0.1",
+    "@packages/models": "^0.0.1",
+    "@textile/hub": "^0.1.7",
+    "aws-lambda": "^1.0.6",
+    "aws-sdk": "^2.707.0",
+    "emittery": "^0.7.0",
+    "isomorphic-ws": "^4.0.1",
+    "ws": "^7.3.0"
+  },
+  "devDependencies": {
+    "@packages/devtools": "^0.0.1",
+    "@types/aws-lambda": "^8.10.56",
+    "@types/node": "^12.12.21",
+    "typescript": "^3.7.3"
+  },
+  "private": true
+}
