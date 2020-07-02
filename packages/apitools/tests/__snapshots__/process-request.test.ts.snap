@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`processRequest returns error message if the process fails 1`] = `
+Object {
+  "body": "{
+  \\"message\\": \\"Some error\\"
+}",
+  "statusCode": 500,
+}
+`;
+
+exports[`processRequest returns successfully if process does not fail 1`] = `
+Object {
+  "body": "{
+  \\"key\\": \\"value\\"
+}",
+  "statusCode": 200,
+}
+`;
+
+exports[`processRequest works for async processes 1`] = `
+Object {
+  "body": "{}",
+  "statusCode": 200,
+}
+`;

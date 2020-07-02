@@ -1,0 +1,12 @@
+{
+  "name": "@resources/cognito",
+  "version": "1.0.0",
+  "description": "Serverless Framework definition for creating the AWS Cognito resources",
+  "main": "index.js",
+  "author": "Daniel Merrill (@dmerrill6)",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "serverless-jetpack": "^0.10.6"
+  }
+}

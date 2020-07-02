@@ -1,0 +1,21 @@
+{
+  "name": "space-services",
+  "private": true,
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "lerna": "^3.13.4",
+    "typescript": "^3.7.3"
+  },
+  "scripts": {
+    "build:all": "lerna run compile",
+    "build:packages": "lerna run compile --scope @packages/*",
+    "build:services": "lerna run compile --scope @services/*",
+    "build:resources": "lerna run compile --scope @resources/*",
+    "bootstrap": "lerna bootstrap"
+  },
+  "workspaces": [
+    "packages/*",
+    "resources/*",
+    "services/*"
+  ]
+}

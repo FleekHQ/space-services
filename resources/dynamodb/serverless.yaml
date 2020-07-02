@@ -1,0 +1,56 @@
+service:
+  name: ${self:provider.appName}-table
+
+plugins:
+  - serverless-jetpack
+
+custom:
+  jetpack:
+    base: "../../"
+
+package:
+  exclude:
+    - "**/node_modules/aws-sdk/**" # included on Lambda.
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-west-2
+  appName: space
+
+resources:
+  Resources:
+    appTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.appName}_table_${opt:stage, self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+          - AttributeName: gs1pk
+            AttributeType: S
+          - AttributeName: gs1sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: gs1
+            KeySchema:
+              - AttributeName: gs1pk
+                KeyType: HASH
+              - AttributeName: gs1sk
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+  Outputs:
+    appTableOutput:
+      Value:
+        'Fn::GetAtt': [appTable, Arn]
+      Export:
+        Name: AppDynamoDbTableArn-${opt:stage, self:provider.stage}
