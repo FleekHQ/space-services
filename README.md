@@ -26,6 +26,16 @@ Contains APIs and lambda functions that are exposed to the users.
 
 This will be configured in CI soon.
 
+### Create the secrets
+
+We use AWS's Parameter Store to store secret values that will get injected as env vars into services. The secrets needed are:
+
+- txl-user-key-${env}
+- txl-user-secret-${env}
+- txl-hub-url-${env}
+
+(where `env` is the current deployed environment as prd or stg)
+
 ### Deploy the resources
 
 If the resources have not been created yet, run the following command in each of the resource folders: `sls --stage [CURR_STAGE] deploy`.

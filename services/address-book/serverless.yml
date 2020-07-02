@@ -29,6 +29,10 @@ custom:
   jetpack:
     base: "../../"
 
+package:
+  exclude:
+    - "**/node_modules/aws-sdk/**" # included on Lambda.
+
 functions:
   createIdentity:
     handler: dist/index.createIdentity
