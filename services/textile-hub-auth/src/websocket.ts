@@ -92,11 +92,9 @@ const handleTokenRequest = async (data: InMessage, connectionId: string) => {
   const client = await createTextileClient();
 
   // Multibase (lib used by textile identities) prepends the public key with a "code"
-  // Since we don't expect the client to know this, we prepend it to comply to it
   // https://github.com/multiformats/js-multibase
-  const multibaseCode = 'b';
   const token = await client.getTokenChallenge(
-    multibaseCode + data.pubkey,
+    data.pubkey,
     (challenge: Uint8Array) => {
       return new Promise((resolve, reject) => {
         const value = Buffer.from(challenge).toJSON();
