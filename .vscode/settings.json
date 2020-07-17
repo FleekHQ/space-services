@@ -1,11 +1,13 @@
 {
   "editor.tabSize": 2,
-    "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
   },
   "eslint.validate": [
     "javascript",
     "typescript",
+    "html",
+    "typescriptreact"
   ],
   "eslint.workingDirectories": [
     {
