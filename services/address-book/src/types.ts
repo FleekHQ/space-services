@@ -3,6 +3,10 @@ export interface CreateIdentityRequest {
   publicKey: string;
 }
 
+export interface GetIdentitiesResponse {
+  [key: string]: IdentityResult;
+}
+
 export interface IdentityResult {
   // The public key of the identity
   publicKey: string;

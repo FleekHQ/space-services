@@ -19,3 +19,12 @@ export const deriveAddressFromPubKey = (pubKey: string): string => {
 
   return `0x${trimmedHash}`;
 };
+
+export const isValidAddress = (address: string): boolean => {
+  const regex = /^0x[0-9A-Fa-f]{36}$/;
+  if (address.match(regex)) {
+    return true;
+  }
+
+  return false;
+};
