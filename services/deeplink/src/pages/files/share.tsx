@@ -9,6 +9,7 @@ import AvailableOn from '../../components/AvailableOn';
 import IndexLayout from '../../layouts';
 import withLocation from '../../hocs/withLocation';
 import { downloadEncryptedFile } from '../../utils/downloadSharedFile';
+import useQueryParams from '../../hooks/useQueryParams';
 
 // required to support server side rendering on
 const StreamSaver = typeof window !== 'undefined' ? require('streamsaver') : {};
@@ -36,17 +37,16 @@ const FilesList = styled.div`
   padding: 15px 20px;
 `;
 
-interface ShareFileProps {
-  search: {
-    fname?: string;
-    hash?: string;
-    key?: string;
-    username?: string;
-  };
+interface SharedFileQueryParams {
+  fname?: string;
+  hash?: string;
+  key?: string;
+  username?: string;
 }
 
-const ShareFile: React.FC<ShareFileProps> = ({ search }: ShareFileProps) => {
-  const { fname, hash, key, username } = search;
+const ShareFile: React.FC = () => {
+  const queryParams = useQueryParams() as SharedFileQueryParams;
+  const { fname, hash, key, username } = queryParams;
   const deeplink = `space://files/share?fname=${fname}&hash=${hash}&key=${key}`;
   const [saveWriter, setSaveWriter] = useState();
   const [downloadInProgress, setDownloadInProgress] = useState(false);
@@ -78,7 +78,7 @@ const ShareFile: React.FC<ShareFileProps> = ({ search }: ShareFileProps) => {
 
   useEffect(() => {
     window.location = deeplink;
-  });
+  }, [queryParams]);
   useEffect(() => {
     // abort so it dose not look stuck
     window.onunload = (): void => {
@@ -132,4 +132,4 @@ const ShareFile: React.FC<ShareFileProps> = ({ search }: ShareFileProps) => {
   );
 };
 
-export default withLocation(ShareFile);
+export default ShareFile;
