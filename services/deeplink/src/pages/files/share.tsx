@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'gatsby';
 import styled from '@emotion/styled';
-import StreamSaver from 'streamsaver';
 
 import Page from '../../components/Page';
 import Button from '../../components/Button';
@@ -10,6 +9,9 @@ import AvailableOn from '../../components/AvailableOn';
 import IndexLayout from '../../layouts';
 import withLocation from '../../hocs/withLocation';
 import { downloadEncryptedFile } from '../../utils/downloadSharedFile';
+
+// required to support server side rendering on
+const StreamSaver = typeof window !== 'undefined' ? require('streamsaver') : {};
 
 const MainContainer = styled(Container)`
   text-align: center;
