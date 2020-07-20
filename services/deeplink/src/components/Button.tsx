@@ -23,6 +23,7 @@ const StyledButton = styled.button`
 
 interface ButtonProps {
   primary?: boolean;
+  onClick?: () => void;
 }
 
 const Button: React.FC<ButtonProps> = ({ children, primary, onClick }) => (

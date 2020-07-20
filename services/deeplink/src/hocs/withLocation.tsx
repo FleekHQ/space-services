@@ -2,7 +2,7 @@ import React from 'react';
 import { Location } from '@reach/router';
 import queryString from 'query-string';
 
-const withLocation = (ComponentToWrap: React.Component) => props => (
+const withLocation = (ComponentToWrap: React.FC) => props => (
   <Location>
     {({ location, navigate }) => (
       <ComponentToWrap

@@ -42,5 +42,12 @@ module.exports = {
     'gatsby-transformer-sharp',
     'gatsby-plugin-react-helmet',
     'gatsby-plugin-ipfs',
+    {
+      resolve: 'gatsby-plugin-load-script',
+      options: {
+        src:
+          'https://cdn.jsdelivr.net/npm/web-streams-polyfill@2.0.2/dist/ponyfill.min.js',
+      },
+    },
   ],
 };

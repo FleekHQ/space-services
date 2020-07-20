@@ -1,12 +1,10 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-        "outDir": "./dist",
-        "rootDir": "./src"
-    },
-    "exclude": [
-        "node_modules",
-        "dist",
-        "tests"
-    ]
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "exclude": ["node_modules", "dist", "tests"],
+
+  "lib": ["dom", "dom.iterable"]
 }

@@ -19,7 +19,18 @@ const Margin = styled.div`
   height: 25px;
 `;
 
-const ShareBucket = ({ search }) => {
+interface ShareBucketProps {
+  search: {
+    bucket?: string;
+    multiaddr?: string;
+    invitationid?: string;
+    key?: string;
+  };
+}
+
+const ShareBucket: React.FC<ShareBucketProps> = ({
+  search,
+}: ShareBucketProps) => {
   const { bucket, multiaddr, invitationid, key } = search;
   const deeplink = `space://buckets/share?bucket=${bucket}&multiaddr=${multiaddr}&invitationid=${invitationid}&key=${key}`;
   useEffect(() => {

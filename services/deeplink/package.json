@@ -27,6 +27,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@reach/router": "^1.3.4",
+    "axios": "^0.19.2",
     "babel-plugin-styled-components": "^1.10.1",
     "classnames": "^2.2.6",
     "gatsby": "^2.10.0",
@@ -36,6 +37,7 @@
     "gatsby-plugin-fontawesome-css": "^1.0.0",
     "gatsby-plugin-google-fonts": "^1.0.1",
     "gatsby-plugin-ipfs": "^2.0.2",
+    "gatsby-plugin-load-script": "^1.1.0",
     "gatsby-plugin-react-helmet": "^3.1.0",
     "gatsby-plugin-react-svg": "^3.0.0",
     "gatsby-plugin-sharp": "^2.2.1",
@@ -44,6 +46,7 @@
     "gatsby-transformer-json": "^2.2.0",
     "gatsby-transformer-sharp": "^2.2.0",
     "modern-normalize": "^0.5.0",
+    "node-forge": "^0.9.1",
     "normalize.css": "^8.0.1",
     "polished": "^3.4.1",
     "prism-themes": "^1.1.0",
@@ -52,15 +55,18 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-helmet": "^5.2.1",
+    "streamsaver": "^2.0.4",
     "typescript": "^3.5.2"
   },
   "devDependencies": {
     "@packages/devtools": "^0.0.1",
     "@types/classnames": "^2.2.8",
     "@types/node": "^12.0.10",
+    "@types/node-forge": "^0.9.4",
     "@types/react": "^16.8.22",
     "@types/react-dom": "^16.8.4",
     "@types/react-helmet": "^5.0.8",
+    "@types/streamsaver": "^2.0.0",
     "gh-pages": "^2.0.1",
     "rimraf": "^2.6.3"
   }
