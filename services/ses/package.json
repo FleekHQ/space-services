@@ -1,0 +1,16 @@
+{
+  "name": "ses",
+  "version": "0.0.1",
+  "description": "Configuration for AWS SES",
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -rf ./dist && mkdir dist && npx mjml templates/*.mjml -o dist/",
+    "deploy": "sls ses-template deploy"
+  },
+  "author": "Vojtech Studenka (@studna)",
+  "license": "ISC",
+  "dependencies": {
+    "@haftahave/serverless-ses-template": "^2.0.0",
+    "mjml": "^4.6.3"
+  }
+}

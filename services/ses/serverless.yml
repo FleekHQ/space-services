@@ -1,0 +1,14 @@
+service: ses-configuration
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-west-2
+
+plugins:
+  - '@haftahave/serverless-ses-template'
+
+custom:
+  sesTemplatesDisableAutoDeploy: true                    # Specifies whether to sync templates while sls deploy (default false)
+  sesTemplatesConfigFile: './config.js' 		 # Config file path (default './ses-email-templates/index.js')
+  sesTemplatesRegion: 'us-west-2' 

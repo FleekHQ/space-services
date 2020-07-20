@@ -1,0 +1,17 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-image width="200px" padding-bottom="30px" src="https://ipfs.io/ipfs/bafybeia2xk2y5qaz25cn74co2ohjgkpcwkvj6wihx3sc4ptnnlcvydodxi"></mj-image>
+        <mj-text font-size="20px">Hi,</mj-text>
+        <mj-text font-size="20px" font-family="helvetica">{{senderUsername}} (<a href="mailto:{{senderEmail}}">{{senderEmail}}</a>) wants to share folder "{{objectName}}" with you.</mj-text>
+        <mj-button background-color="#006eff" line-height="30px" font-size="20px" padding="15px" href="https://base-url.com/{{objectHref}}">
+          Go to Folder
+        </mj-button>
+
+        <mj-text font-size="20px" line-height="14px" font-family="helvetica">Thanks!</mj-text>
+        <mj-text font-size="20px" line-height="14px" font-family="helvetica">The Space Team</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
