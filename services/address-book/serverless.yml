@@ -72,3 +72,12 @@ functions:
             parameters:
               paths:
                 address: true
+  getMultipleIdentities:
+    handler: dist/index.getIdentities
+    environment:
+      ENV: ${self:provider.stage}
+    events:
+      - http:
+          method: get
+          path: /identities
+          cors: true
