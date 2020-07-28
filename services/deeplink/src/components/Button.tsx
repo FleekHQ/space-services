@@ -26,10 +26,34 @@ interface ButtonProps {
   onClick?: () => void;
 }
 
-const Button: React.FC<ButtonProps> = ({ children, primary, onClick }) => (
-  <StyledButton primary={primary} onClick={onClick}>
+const Button: React.FC<ButtonProps> = ({
+  children,
+  primary,
+  onClick,
+  className,
+}) => (
+  <StyledButton primary={primary} onClick={onClick} className={className}>
     {children}
   </StyledButton>
 );
+
+export const BlackButton = styled(Button)`
+  background-color: ${colors.black};
+  &:hover,
+  &:focus {
+    background-color: ${colors.white};
+    color: ${colors.black};
+  }
+`;
+
+export const WhiteButton = styled(Button)`
+  background-color: ${colors.white};
+  color: ${colors.black};
+  &:hover,
+  &:focus {
+    background-color: ${colors.black};
+    color: ${colors.white};
+  }
+`;
 
 export default Button;
