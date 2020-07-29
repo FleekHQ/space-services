@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from '@emotion/styled';
 import { transparentize } from 'polished';
 import { Link } from 'gatsby';
-import Logo from '../images/logo.svg';
+import Logo from '../svgs/logo.svg';
 
 import { heights, dimensions, colors } from '../styles/variables';
 import Container from './Container';
