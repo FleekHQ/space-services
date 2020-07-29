@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/pro-light-svg-icons/faDownload';
 
-import space from '../../../../../images/space.png';
-import FileIcon from '../../../../../components/FileIcon';
+import FileIcon from '../FileIcon';
+import space from '../../images/space.png';
 
 import {
   css,

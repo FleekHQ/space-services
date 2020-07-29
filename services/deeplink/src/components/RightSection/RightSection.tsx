@@ -6,7 +6,7 @@ import { faLinux } from '@fortawesome/free-brands-svg-icons/faLinux';
 import { faWindows } from '@fortawesome/free-brands-svg-icons/faWindows';
 
 import { Container, Title, Button, SubTitle, css } from './style';
-import spaceLogo from '../../../../../images/space-logo.png';
+import spaceLogo from '../../images/space-logo.png';
 
 export interface RightSectionProps {
   onDownloadSpace: () => void;

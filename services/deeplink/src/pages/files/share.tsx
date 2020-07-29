@@ -1,8 +1,34 @@
 import React, { useState } from 'react';
-import { Global } from '@emotion/core';
-import { LeftSection, RightSection, PasswordModal } from './components';
+import styled from '@emotion/styled';
+import { Global, css } from '@emotion/core';
 
-import { Container, Section, globalStyles } from './styles';
+import LeftSection from '../../components/LeftSection';
+import RightSection from '../../components/RightSection';
+import PasswordModal from '../../components/PasswordModal';
+
+const Container = styled.div`
+  display: flex;
+  height: 100%;
+`;
+
+const Section = styled.div`
+  display: flex;
+  width: 50%;
+  align-items: center;
+  justify-content: center;
+`;
+
+const globalStyles = css`
+  html {
+    height: 100%;
+  }
+
+  body,
+  body > div,
+  body > div > div {
+    height: 100%;
+  }
+`;
 
 /* eslint-disable no-console, @typescript-eslint/explicit-function-return-type */
 const ShareView: React.FC = () => {

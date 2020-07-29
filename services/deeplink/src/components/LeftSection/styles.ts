@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { css as ecss } from '@emotion/core';
 
-import recommendedIcon from '../../../../../svgs/recommended.svg';
+import recommendedIcon from '../../svgs/recommended.svg';
 
 export const Title = styled.p`
   font-size: 28px;
