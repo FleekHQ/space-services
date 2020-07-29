@@ -86,6 +86,9 @@ const spaceimage = ecss`
 
 const cardsizing = ecss`
   padding: 18px 41px 21px;
+  @media (max-width: 980px) {
+    padding: 18px 21px 21px;;
+  }
 `;
 
 const downloadicon = ecss`

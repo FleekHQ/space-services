@@ -30,6 +30,9 @@ const Section = styled.div`
 const globalStyles = css`
   html {
     height: 100%;
+    @media (max-width: 980px) {
+      height: auto;
+    }
   }
 
   body,
