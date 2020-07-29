@@ -9,6 +9,9 @@ export const Container = styled.div`
   height: 100%;
   width: 100%;
   flex-direction: column;
+  @media (max-width: 980px) {
+    padding: 40px 10px;
+  }
 `;
 
 export const Title = styled.p`
@@ -16,6 +19,8 @@ export const Title = styled.p`
   font-weight: 500;
   margin: 0;
   padding: 0;
+  line-height: 1.14;
+  text-align: center;
 `;
 
 export const Button = styled.button`
