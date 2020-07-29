@@ -1,5 +1,5 @@
-import { dimensions, fonts, colors, breakpoints } from './variables'
-import { getEmSize } from './mixins'
+import { dimensions, fonts, colors, breakpoints } from './variables';
+import { getEmSize } from './mixins';
 
 export default `
   html {
@@ -18,6 +18,7 @@ export default `
   }
 
   body {
+    margin: 0;
     width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -26,6 +27,14 @@ export default `
     background-color: ${colors.white};
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
+  }
+
+  button {
+    font-family: ${fonts.sansSerif};
+  }
+
+  input {
+    font-family: ${fonts.sansSerif};
   }
 
   a {
@@ -157,4 +166,4 @@ export default `
       padding-left: 1.25rem;
     }
   }
-`
+`;

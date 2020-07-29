@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { Global, css } from '@emotion/core';
 
+import normalize from '../../styles/normalize';
 import LeftSection from '../../components/LeftSection';
 import RightSection from '../../components/RightSection';
 import PasswordModal from '../../components/PasswordModal';
@@ -9,6 +10,10 @@ import PasswordModal from '../../components/PasswordModal';
 const Container = styled.div`
   display: flex;
   height: 100%;
+  background-color: #f6f8fc;
+  @media (max-width: 980px) {
+    flex-direction: column;
+  }
 `;
 
 const Section = styled.div`
@@ -16,6 +21,10 @@ const Section = styled.div`
   width: 50%;
   align-items: center;
   justify-content: center;
+  background-color: #fff;
+  @media (max-width: 980px) {
+    width: 100%;
+  }
 `;
 
 const globalStyles = css`
@@ -53,6 +62,7 @@ const ShareView: React.FC = () => {
   return (
     <>
       <Global styles={globalStyles} />
+      <Global styles={css(normalize)} />
       <PasswordModal
         open={openModal}
         onCancel={closeModal}
