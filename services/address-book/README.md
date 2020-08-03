@@ -20,7 +20,7 @@ Response:
   "username": "SomeUsername",
   "publicKey": "0801122...",
   "displayName": "John Doe",
-    "profilePicture": "https://...",
+  "profilePicture": "https://...",
 }
 ```
 
