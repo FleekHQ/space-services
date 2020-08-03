@@ -15,14 +15,10 @@ interface InMessage {
 }
 
 const createTextileClient = async (): Promise<Client> => {
-  const client = await Client.withKeyInfo(
-    {
-      key: process.env.TXL_USER_KEY,
-      secret: process.env.TXL_USER_SECRET,
-      type: 1,
-    },
-    process.env.TXL_HUB_URL
-  );
+  const client = await Client.withKeyInfo({
+    key: process.env.TXL_USER_KEY,
+    secret: process.env.TXL_USER_SECRET,
+  });
 
   return client;
 };
