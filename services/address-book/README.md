@@ -18,7 +18,9 @@ Response:
 {
   "address": "0x...",
   "username": "SomeUsername",
-  "publicKey": "0801122..."
+  "publicKey": "0801122...",
+  "displayName": "John Doe",
+  "profilePicture": "https://...",
 }
 ```
 
@@ -36,7 +38,9 @@ Response:
 {
   "address": "0x...",
   "username": "SomeUsername",
-  "publicKey": "0801122..."
+  "publicKey": "0801122...",
+  "displayName": "John Doe",
+  "profilePicture": "https://...",
 }
 ```
 
@@ -58,6 +62,8 @@ Response:
     "address": "0x...",
     "username": "SomeUsername",
     "publicKey": "0801122..."
+    "displayName": "John Doe",
+    "profilePicture": "https://...",
   },
   ...
 ]
@@ -84,5 +90,53 @@ Response:
   "createdAt": "2020-06-19T19:56:34.941Z",
   "username": "SomeUsername",
   "publicKey": "0801122..."
+}
+```
+
+### Update Identity (NOT IMPLEMENTED YET)
+
+Request
+
+```
+PUT /identities/:address
+Headers: {
+  Authorization: :token
+}
+Raw Body: {
+  // All params are optional
+  "username": "SomeUsername",
+  "publicKey": "0801122...",
+  "displayName": "John Doe",
+}
+```
+
+Response:
+
+```
+{
+  "address": "0x...",
+  "username": "SomeUsername",
+  "publicKey": "0801122..."
+  "profilePicture": "https://...",
+}
+```
+
+### Upload Profile Picture (NOT IMPLEMENTED YET)
+
+Request
+
+```
+PUT /identities/:address/picture
+Headers: {
+  Authorization: :token
+}
+Multipart Upload Content...
+```
+
+Response
+
+```
+{
+  "profilePicture": "https://...",
 }
 ```
