@@ -19,7 +19,7 @@
   "dependencies": {
     "@packages/apitools": "^0.0.1",
     "@packages/models": "^0.0.1",
-    "@textile/hub": "^0.1.7",
+    "@textile/hub": "^0.4.1",
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.707.0",
     "emittery": "^0.7.0",

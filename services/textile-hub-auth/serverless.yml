@@ -44,6 +44,7 @@ functions:
     handler: dist/index.handler
     timeout: 15
     environment:
+      JWT_SECRET: ${ssm:txl-hub-jwt-secret}
       TXL_USER_KEY: ${ssm:txl-user-key-${self:provider.stage}~true}
       TXL_USER_SECRET: ${ssm:txl-user-secret-${self:provider.stage}~true}
       TXL_HUB_URL: ${ssm:txl-hub-url-${self:provider.stage}~true}
