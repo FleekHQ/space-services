@@ -2,10 +2,12 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { Client } from '@textile/hub';
 import { SignatureModel } from '@packages/models';
 import AWS from 'aws-sdk';
+import jwt from 'jsonwebtoken';
 
 (global as any).WebSocket = require('isomorphic-ws');
 
 const STAGE = process.env.ENV;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const sigDb = new SignatureModel(STAGE);
 
@@ -145,11 +147,21 @@ export const handler = async function(
     case 'token':
       {
         const parsedBody = JSON.parse(body);
+
         try {
           const token = await handleTokenRequest(parsedBody.data, connectionId);
+
+          const appToken = jwt.sign(
+            {
+              pubkey: parsedBody.data.pubkey,
+            },
+            JWT_SECRET,
+            { expiresIn: '1d' }
+          );
+
           await sendMessageToClient(connectionId, {
             type: 'token',
-            value: { token },
+            value: { token, appToken },
           });
         } catch (error) {
           console.error(error);
