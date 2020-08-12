@@ -2,39 +2,39 @@ import { Identity, RawIdentity, Proof, RawProof } from './types';
 
 // Note: Read ./README.md for details on access patterns
 
-export const IDENTITY_KEY = 'identity';
+export const IDENTITY_KEY = 'id';
 export const PROOF_KEY = 'proof';
 
 export const mapIdentityDbObject = (identity: Identity): RawIdentity => {
   return {
-    pk: IDENTITY_KEY,
-    sk: identity.username,
-    gs1pk: IDENTITY_KEY,
-    gs1sk: identity.address,
+    pk: `${IDENTITY_KEY}#${identity.username}`,
+    sk: IDENTITY_KEY,
+    gs1pk: identity.address,
+    gs1sk: IDENTITY_KEY,
     ...identity,
   };
 };
 
 export const parseDbObjectToIdentity = (dbObject: RawIdentity): Identity => ({
-  address: dbObject.gs1sk,
-  username: dbObject.sk,
+  address: dbObject.address,
+  username: dbObject.username,
   publicKey: dbObject.publicKey,
   createdAt: dbObject.createdAt,
 });
 
 export const mapProofDbObject = (proof: Proof): RawProof => {
   return {
-    pk: PROOF_KEY,
-    sk: proof.value,
-    gs1pk: PROOF_KEY,
-    gs1sk: proof.username,
+    pk: `${PROOF_KEY}#${proof.value}`,
+    sk: proof.proofType,
+    gs1pk: `${IDENTITY_KEY}#${proof.username}`,
+    gs1sk: `${PROOF_KEY}#${proof.proofType}`,
     ...proof,
   };
 };
 
 export const parseDbObjectToProof = (dbObject: RawProof): Proof => ({
-  value: dbObject.sk,
-  username: dbObject.gs1sk,
+  value: dbObject.value,
+  username: dbObject.username,
   proofType: dbObject.proofType,
   createdAt: dbObject.createdAt,
 });
