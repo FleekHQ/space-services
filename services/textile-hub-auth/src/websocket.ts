@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { Client } from '@textile/hub';
-import { SignatureModel } from '@packages/models';
+import { SignatureModel, IdentityModel } from '@packages/models';
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
 
@@ -10,6 +10,7 @@ const STAGE = process.env.ENV;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const sigDb = new SignatureModel(STAGE);
+const identityDb = new IdentityModel(STAGE);
 
 interface InMessage {
   sig?: string;
@@ -150,10 +151,13 @@ export const handler = async function(
 
         try {
           const token = await handleTokenRequest(parsedBody.data, connectionId);
+          const { pubkey } = parsedBody.data;
+          const user = await identityDb.getIdentityByPublicKey(pubkey);
 
           const appToken = jwt.sign(
             {
-              pubkey: parsedBody.data.pubkey,
+              pubkey,
+              username: user && user.username,
             },
             JWT_SECRET,
             { expiresIn: '1d' }
