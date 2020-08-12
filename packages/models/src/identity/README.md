@@ -12,16 +12,16 @@
 
 ## Database structure to enable these access patterns
 
-|                | pk       | sk             | g1pk     | g1sk      |
-|----------------|----------|----------------|----------|-----------|
-| Identity       | identity | :username      | identity | :address  |
-| Email Proofs   | email    | :email         | proof    | :username |
-| Twitter Proofs | twitter  | :twitterHandle | proof    | :username |
+|                | pk                      | sk             | g1pk            | g1sk          |
+|----------------|-------------------------|----------------|-----------------|---------------|
+| Identity       | `id#:username`          | id             | :address        | id            |
+| Email Proofs   | `proof#:email`          | email          | id#:username    | proof#email   |
+| Twitter Proofs | `proof#:twitterHandle`  | twitter        | id#:username    | proof#twitter |
 
-1- Get identity by username: pk=identity, sdk=:username
+1- GetItem: identity by username: pk=id#username, sk=id
 
-2- Get identity by email: pk=email, sk=:email, then use username at sk and pk=identity
+2- GetItem: identity by email: pk=proof#:email, sk=email, then use username to get identity
 
-3- Get identity by address: g1pk=identity, g1sk=:address
+3- Query: identity by address: g1pk=:address, g1sk=id
 
 4- Same as (2)
