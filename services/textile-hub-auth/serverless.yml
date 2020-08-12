@@ -70,3 +70,5 @@ functions:
           route: $disconnect
   authorizerFunc:
     handler: dist/authorizer.handler
+    environment:
+      JWT_SECRET: ${ssm:txl-hub-jwt-secret}
