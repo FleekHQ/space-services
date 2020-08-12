@@ -68,3 +68,5 @@ functions:
           route: $default
       - websocket:
           route: $disconnect
+  authorizerFunc:
+    handler: dist/authorizer.handler
