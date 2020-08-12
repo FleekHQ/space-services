@@ -83,6 +83,11 @@ export class IdentityModel extends BaseModel {
     return identities[0];
   }
 
+  public getIdentityByPublicKey(publicKey: string): Promise<Identity> {
+    const address = deriveAddressFromPubKey(publicKey);
+    return this.getIdentityByAddress(address);
+  }
+
   public async getIdentityByUsername(username: string): Promise<Identity> {
     const stubIdentity = mapIdentityDbObject({
       username,
