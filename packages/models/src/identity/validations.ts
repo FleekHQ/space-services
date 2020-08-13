@@ -1,4 +1,4 @@
-import { Identity } from './types';
+import { IdentityRecord as Identity } from './types';
 
 import { ValidationError } from '../errors';
 

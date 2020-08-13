@@ -3,6 +3,7 @@ import { Client } from '@textile/hub';
 import { SignatureModel, IdentityModel } from '@packages/models';
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
+import { AuthContext } from './authorizer';
 
 (global as any).WebSocket = require('isomorphic-ws');
 
@@ -154,11 +155,13 @@ export const handler = async function(
           const { pubkey } = parsedBody.data;
           const user = await identityDb.getIdentityByPublicKey(pubkey);
 
+          const authPayload: AuthContext = {
+            pubkey,
+            uuid: user.uuid,
+          };
+
           const appToken = jwt.sign(
-            {
-              pubkey,
-              username: user && user.username,
-            },
+            authPayload,
             JWT_SECRET,
             { expiresIn: '1d' }
           );

@@ -8,7 +8,10 @@ export interface CreateIdentityInput {
   username: string;
 }
 
-export interface Identity {
+export interface IdentityRecord {
+  // UUID
+  uuid: string;
+
   // The public key of the identity
   publicKey: string;
 
@@ -24,7 +27,7 @@ export interface Identity {
   // TODO: Twitter handle or other identity providers
 }
 
-export interface RawIdentity extends AppTableItem {
+export interface RawIdentityRecord extends AppTableItem {
   // The public key of the identity
   publicKey: string;
 
@@ -46,14 +49,14 @@ export interface CreateProofInput {
   value: string;
 
   // The username of the user this proof belongs to
-  username: string;
+  uuid: string;
 }
 
 export enum ProofType {
   email = 'email',
 }
 
-export interface Proof {
+export interface ProofRecord {
   // The type of proof
   proofType: ProofType;
 
@@ -61,13 +64,13 @@ export interface Proof {
   value: string;
 
   // The username of the user this proof belongs to
-  username: string;
+  uuid: string;
 
   // Date of creation in ISO format
   createdAt: string;
 }
 
-export interface RawProof extends AppTableItem {
+export interface RawProofRecord extends AppTableItem {
   // The type of proof
   proofType: ProofType;
 
@@ -75,8 +78,30 @@ export interface RawProof extends AppTableItem {
   value: string;
 
   // The username of the user this proof belongs to
-  username: string;
+  uuid: string;
 
   // Date of creation in ISO format
   createdAt: string;
 }
+
+
+export interface UsernameRecord {
+  username: string;
+  uuid: string;
+  createdAt: string;
+}
+
+export interface RawUsernameRecord extends AppTableItem {
+  createdAt: string;
+};
+
+
+export interface AddressRecord {
+  address: string;
+  uuid: string;
+  createdAt: string;
+}
+
+export interface RawAddressRecord extends AppTableItem {
+  createdAt: string;
+};

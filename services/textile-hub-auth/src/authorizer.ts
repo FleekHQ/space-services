@@ -8,8 +8,8 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-interface AuthContext {
-  username: string;
+export interface AuthContext {
+  uuid: string;
   pubkey: string;
 }
 
@@ -60,11 +60,11 @@ export const handler = async function(event: CustomAuthorizerEvent, _context: Co
   const { headers } = event;
 
   try {
-  const decoded = jwt.verify(headers.Authorization, JWT_SECRET);
+  const decoded = jwt.verify(headers.Authorization, JWT_SECRET) as AuthContext;
 
   callback(
     null,
-    generateAllow('me', event.methodArn, { pubkey: decoded.pubkey, username: decoded.username })
+    generateAllow('me', event.methodArn, { pubkey: decoded.pubkey, uuid: decoded.uuid })
   );
   } catch (e) {
     callback('Unauthorized request');
