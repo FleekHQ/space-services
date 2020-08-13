@@ -24,11 +24,14 @@
     "aws-sdk": "^2.707.0",
     "emittery": "^0.7.0",
     "isomorphic-ws": "^4.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "uuid": "^8.3.0",
     "ws": "^7.3.0"
   },
   "devDependencies": {
     "@packages/devtools": "^0.0.1",
     "@types/aws-lambda": "^8.10.56",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^12.12.21",
     "typescript": "^3.7.3"
   },

@@ -1,40 +1,114 @@
-import { Identity, RawIdentity, Proof, RawProof } from './types';
+import {
+  IdentityRecord,
+  RawIdentityRecord,
+  ProofRecord,
+  RawProofRecord,
+  UsernameRecord,
+  RawUsernameRecord,
+  RawAddressRecord,
+  AddressRecord,
+} from './types';
+import { PrimaryKey } from '../types';
 
 // Note: Read ./README.md for details on access patterns
 
 export const IDENTITY_KEY = 'id';
 export const PROOF_KEY = 'proof';
 
-export const mapIdentityDbObject = (identity: Identity): RawIdentity => {
+export const getIdentityPrimaryKey = (uuid: string): PrimaryKey => ({
+  pk: uuid,
+  sk: IDENTITY_KEY,
+});
+
+export const getProofPrimaryKey = (
+  value: string,
+  type: string
+): PrimaryKey => ({
+  pk: `${PROOF_KEY}#${value}`,
+  sk: type,
+});
+
+export const getUsernamePrimaryKey = (username: string): PrimaryKey => ({
+  pk: `u#${username}`,
+  sk: `username`,
+});
+
+export const getAddressPrimaryKey = (address: string): PrimaryKey => ({
+  pk: address,
+  sk: `address`,
+});
+
+export const mapIdentityDbObject = (
+  identity: IdentityRecord
+): RawIdentityRecord => {
+  const { uuid, ...rest } = identity;
+
   return {
-    pk: `${IDENTITY_KEY}#${identity.username}`,
-    sk: IDENTITY_KEY,
-    gs1pk: identity.address,
-    gs1sk: IDENTITY_KEY,
-    ...identity,
+    ...getIdentityPrimaryKey(uuid),
+    ...rest,
   };
 };
 
-export const parseDbObjectToIdentity = (dbObject: RawIdentity): Identity => ({
+export const parseDbObjectToIdentity = (
+  dbObject: RawIdentityRecord
+): IdentityRecord => ({
+  uuid: dbObject.pk,
   address: dbObject.address,
   username: dbObject.username,
   publicKey: dbObject.publicKey,
   createdAt: dbObject.createdAt,
 });
 
-export const mapProofDbObject = (proof: Proof): RawProof => {
+export const mapProofDbObject = (proof: ProofRecord): RawProofRecord => {
   return {
-    pk: `${PROOF_KEY}#${proof.value}`,
-    sk: proof.proofType,
-    gs1pk: `${IDENTITY_KEY}#${proof.username}`,
+    ...getProofPrimaryKey(proof.value, proof.proofType),
+    gs1pk: proof.uuid,
     gs1sk: `${PROOF_KEY}#${proof.proofType}`,
     ...proof,
   };
 };
 
-export const parseDbObjectToProof = (dbObject: RawProof): Proof => ({
+export const parseDbObjectToProof = (
+  dbObject: RawProofRecord
+): ProofRecord => ({
   value: dbObject.value,
-  username: dbObject.username,
+  uuid: dbObject.uuid,
   proofType: dbObject.proofType,
+  createdAt: dbObject.createdAt,
+});
+
+export const mapUsernameDbObject = (
+  input: UsernameRecord
+): RawUsernameRecord => {
+  return {
+    ...getUsernamePrimaryKey(input.username),
+    gs1pk: input.uuid,
+    gs1sk: `username`,
+    createdAt: input.createdAt,
+  };
+};
+
+export const parseDbObjectToUsername = (
+  dbObject: RawUsernameRecord
+): UsernameRecord => ({
+  uuid: dbObject.gs1pk,
+  username: dbObject.pk.split(`#`).pop(),
+  createdAt: dbObject.createdAt,
+});
+
+export const mapAddressDbObject = (input: AddressRecord): RawAddressRecord => {
+  return {
+    ...getAddressPrimaryKey(input.address),
+    gs1pk: input.uuid,
+    gs1sk: `address`,
+    createdAt: input.createdAt,
+  };
+};
+
+export const parseDbObjectToAddress = (
+  dbObject: RawAddressRecord
+): AddressRecord => ({
+  uuid: dbObject.gs1pk,
+  address: dbObject.pk,
   createdAt: dbObject.createdAt,
 });
