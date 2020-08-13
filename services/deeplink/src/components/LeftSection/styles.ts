@@ -7,6 +7,8 @@ export const Title = styled.p`
   font-size: 28px;
   text-align: center;
   font-weight: 500;
+  padding: 26px 0;
+  line-height: 1.14;
 `;
 
 export const Card = styled.div`
@@ -42,6 +44,7 @@ export const Button = styled.button`
   justify-content: center;
   width: 100%;
   font-weight: 500;
+  font-size: 18px;
 `;
 
 export const LineContainer = styled.div`
@@ -57,6 +60,9 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  @media (max-width: 980px) {
+    padding: 40px 10px;
+  }
 `;
 
 const buttonblack = ecss`
@@ -80,6 +86,9 @@ const spaceimage = ecss`
 
 const cardsizing = ecss`
   padding: 18px 41px 21px;
+  @media (max-width: 980px) {
+    padding: 18px 21px 21px;;
+  }
 `;
 
 const downloadicon = ecss`
@@ -110,8 +119,8 @@ const ortext = ecss`
   margin: 0;
   height: 40px;
   position: absolute;
-  top: -10px;
-  left: calc(50% - 10px);
+  top: -7px;
+  left: calc(50% - 20px);
   text-align: center;
   font-weight: 500;
 `;
