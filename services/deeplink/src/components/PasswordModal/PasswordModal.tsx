@@ -26,7 +26,7 @@ export interface PasswordModalProps {
 const PasswordModal: React.FC<PasswordModalProps> = props => {
   const { open, onOpen, onCancel, onClose, onOuterClick } = props;
 
-  const [password, setPassword] = useState();
+  const [password, setPassword] = useState('');
 
   if (!open) return null;
 
