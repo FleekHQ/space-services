@@ -44,7 +44,7 @@ functions:
     handler: dist/index.handler
     timeout: 15
     environment:
-      JWT_SECRET: ${ssm:txl-hub-jwt-secret}
+      JWT_SECRET: ${ssm:txl-hub-jwt-secret-${self:provider.stage}~true}
       TXL_USER_KEY: ${ssm:txl-user-key-${self:provider.stage}~true}
       TXL_USER_SECRET: ${ssm:txl-user-secret-${self:provider.stage}~true}
       TXL_HUB_URL: ${ssm:txl-hub-url-${self:provider.stage}~true}
@@ -71,4 +71,36 @@ functions:
   authorizerFunc:
     handler: dist/authorizer.handler
     environment:
-      JWT_SECRET: ${ssm:txl-hub-jwt-secret}
+      JWT_SECRET: ${ssm:txl-hub-jwt-secret-${self:provider.stage}~true}
+
+  changeUsername:
+    memorySize: 128
+    handler: dist/changeUsername.handler
+    environment:
+      REGION: ${self:provider.region}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          path: /username
+          method: POST
+          authorizer:
+            name: authorizerFunc
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
+
+  updateIdentity:
+    memorySize: 128
+    handler: dist/updateIdentity.handler
+    environment:
+      REGION: ${self:provider.region}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          path: /identity
+          method: PUT
+          authorizer:
+            name: authorizerFunc
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0

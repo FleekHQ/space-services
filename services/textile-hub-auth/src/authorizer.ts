@@ -2,7 +2,7 @@ import {
   CustomAuthorizerResult,
   Callback,
   Context,
-  CustomAuthorizerEvent,
+  CustomAuthorizerEvent
 } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 
@@ -53,19 +53,31 @@ const generateAllow = (
   generatePolicy(principalId, 'Allow', resource, context);
 
 // eslint-disable-next-line
-export const handler = async function(event: CustomAuthorizerEvent, _context: Context, callback: Callback<CustomAuthorizerResult>) {
+export const handler = async function(
+  event: CustomAuthorizerEvent,
+  _context: Context,
+  callback: Callback<CustomAuthorizerResult>
+) {
   console.log('Received event:', JSON.stringify(event, null, 2));
 
   // Retrieve request parameters from the Lambda function input:
-  const { headers } = event;
+  const token = event.authorizationToken;
+
+  if (!token) {
+    callback('Unauthorized request');
+    return;
+  }
 
   try {
-  const decoded = jwt.verify(headers.Authorization, JWT_SECRET) as AuthContext;
+    const decoded = jwt.verify(token, JWT_SECRET) as AuthContext;
 
-  callback(
-    null,
-    generateAllow('me', event.methodArn, { pubkey: decoded.pubkey, uuid: decoded.uuid })
-  );
+    callback(
+      null,
+      generateAllow('me', event.methodArn, {
+        pubkey: decoded.pubkey,
+        uuid: decoded.uuid,
+      })
+    );
   } catch (e) {
     callback('Unauthorized request');
   }

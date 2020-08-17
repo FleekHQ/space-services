@@ -23,7 +23,7 @@ import {
 } from './types';
 import { validateIdentity } from './validations';
 import { BaseModel } from '../base';
-import { NotFoundError } from '../errors';
+import { NotFoundError, ValidationError } from '../errors';
 
 export class IdentityModel extends BaseModel {
   constructor(env: string, client: DocumentClient = new DocumentClient()) {
@@ -84,7 +84,7 @@ export class IdentityModel extends BaseModel {
     );
 
     if (!rawIdentity) {
-      throw new NotFoundError(`Identity with address not found.`);
+      throw new NotFoundError(`Identity was not found.`);
     }
 
     return parseDbObjectToIdentity(rawIdentity);
@@ -121,6 +121,92 @@ export class IdentityModel extends BaseModel {
 
     const record = parseDbObjectToUsername(rawUsername);
     return this.getIdentityByUuid(record.uuid);
+  }
+
+  public async updateIdentity(uuid: string, payload: Record<string, any>) {
+    // check that identity exists
+    await this.getIdentityByUuid(uuid);
+
+    const allowedKeys = ['displayName'];
+
+    // update uuid with new username
+    const Key = getIdentityPrimaryKey(uuid);
+
+    const ExpressionAttributeValues = {};
+    const ExpressionAttributeNames = {};
+
+    const updates = [];
+
+    Object.keys(payload).forEach(key => {
+      if (allowedKeys.indexOf(key) >= 0) {
+        ExpressionAttributeValues[`:${key}`] = payload[key];
+        ExpressionAttributeNames[`#${key}`] = key;
+        updates.push(`#${key} = :${key}`);
+      }
+    });
+
+    if(!updates.length) {
+      throw new Error('Invalid payload.')
+    }
+
+    const UpdateExpression = `SET ${updates.join(',')}`;
+
+    const params = {
+      TableName: this.table,
+      Select: 'ALL_PROJECTED_ATTRIBUTES',
+      Key,
+      ExpressionAttributeValues,
+      ExpressionAttributeNames,
+      UpdateExpression,
+    };
+
+    await this.update(params);
+  }
+
+  public async changeUsername(uuid: string, username: string) {
+    const usernameExists = await this.getIdentityByUsername(username).catch(
+      () => false
+    );
+
+    if (usernameExists) {
+      throw new ValidationError('Username is already taken.');
+    }
+
+    const identity = await this.getIdentityByUuid(uuid);
+
+    // assign new username to uuid
+    await this.put(
+      mapUsernameDbObject({
+        uuid,
+        username,
+        createdAt: new Date().toISOString(),
+      })
+    );
+
+    // update uuid with new username
+    const Key = getIdentityPrimaryKey(uuid);
+
+    const ExpressionAttributeValues = {
+      ':username': username,
+    };
+    const ExpressionAttributeNames = {
+      '#username': 'username',
+    };
+    const UpdateExpression = 'SET #username = :username';
+
+    const params = {
+      TableName: this.table,
+      Select: 'ALL_PROJECTED_ATTRIBUTES',
+      Key,
+      ExpressionAttributeValues,
+      ExpressionAttributeNames,
+      UpdateExpression,
+    };
+
+    await this.update(params);
+
+    // release old username
+    await this.delete(getUsernamePrimaryKey(identity.username));
   }
 }
 
