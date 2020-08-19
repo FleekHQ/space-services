@@ -50,8 +50,9 @@ export class IdentityModel extends BaseModel {
     const dbItem = mapIdentityDbObject(newIdentity);
 
     // reserve username for this identity
-    await this.put(mapUsernameDbObject(newIdentity));
-
+    if (newIdentity.username) {
+      await this.put(mapUsernameDbObject(newIdentity));
+    }
     // reserve address for this identity
     await this.put(mapAddressDbObject(newIdentity));
 
@@ -127,7 +128,7 @@ export class IdentityModel extends BaseModel {
     // check that identity exists
     await this.getIdentityByUuid(uuid);
 
-    const allowedKeys = ['displayName'];
+    const allowedKeys = ['displayName', 'avatarUrl'];
 
     // update uuid with new username
     const Key = getIdentityPrimaryKey(uuid);
@@ -145,8 +146,8 @@ export class IdentityModel extends BaseModel {
       }
     });
 
-    if(!updates.length) {
-      throw new Error('Invalid payload.')
+    if (!updates.length) {
+      throw new Error('Invalid payload.');
     }
 
     const UpdateExpression = `SET ${updates.join(',')}`;

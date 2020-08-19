@@ -81,7 +81,7 @@ functions:
       ENV: ${opt:stage}
     events:
       - http:
-          path: /username
+          path: /identity/username
           method: POST
           authorizer:
             name: authorizerFunc
@@ -104,3 +104,25 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
             resultTtlInSeconds: 0
+  uploadAvatar:
+    memorySize: 128
+    handler: dist/uploadAvatar.handler
+    environment:
+      REGION: ${self:provider.region}
+      IPFS_HOST: ${ssm:space-ipfs-host-${self:provider.stage}~true}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          path: /identity/avatar
+          method: POST
+          authorizer:
+            name: authorizerFunc
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
+    # VPC configuration is needed if your IPFS node sits inside private subnet
+    vpc:
+      securityGroupIds:
+        - ${ssm:space-ipfs-sg}
+      subnetIds:
+        - ${ssm:space-ipfs-subnet}
