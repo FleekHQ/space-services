@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { Client } from '@textile/hub';
-import { SignatureModel, IdentityModel } from '@packages/models';
+import { SignatureModel, IdentityModel, NotFoundError } from '@packages/models';
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
 import { AuthContext } from './authorizer';
@@ -153,18 +153,26 @@ export const handler = async function(
         try {
           const token = await handleTokenRequest(parsedBody.data, connectionId);
           const { pubkey } = parsedBody.data;
-          const user = await identityDb.getIdentityByPublicKey(pubkey);
+          const user = await identityDb
+            .getIdentityByPublicKey(pubkey)
+            .catch(e => {
+              if (e instanceof NotFoundError) {
+                return identityDb.createIdentity({
+                  publicKey: pubkey,
+                });
+              }
+
+              throw e;
+            });
 
           const authPayload: AuthContext = {
             pubkey,
             uuid: user.uuid,
           };
 
-          const appToken = jwt.sign(
-            authPayload,
-            JWT_SECRET,
-            { expiresIn: '1d' }
-          );
+          const appToken = jwt.sign(authPayload, JWT_SECRET, {
+            expiresIn: '1d',
+          });
 
           await sendMessageToClient(connectionId, {
             type: 'token',

@@ -5,7 +5,7 @@ export interface CreateIdentityInput {
   publicKey: string;
 
   // Human readable identifier
-  username: string;
+  username?: string;
 }
 
 export interface IdentityRecord {
@@ -19,7 +19,7 @@ export interface IdentityRecord {
   address: string;
 
   // Human readable identifier
-  username: string;
+  username?: string;
 
   // Date of creation in ISO format
   createdAt: string;
@@ -35,7 +35,7 @@ export interface RawIdentityRecord extends AppTableItem {
   address: string;
 
   // Human readable identifier
-  username: string;
+  username?: string;
 
   // Date of creation in ISO format
   createdAt: string;
