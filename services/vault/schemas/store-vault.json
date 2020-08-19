@@ -1,0 +1,28 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Store Vault",
+  "required": [
+    "uuid",
+    "vault",
+    "vsk"
+  ],
+  "properties": {
+    "uuid": {
+      "type": "string",
+      "title": "Uuid",
+      "description": "Unique id of the user"
+    },
+    "vault": {
+      "type": "string",
+      "title": "Vault File",
+      "description": "The encrypted vault file content"
+    },
+    "vsk": {
+      "type": "string",
+      "title": "Vault Service Key",
+      "description": "Client-side key derivation of the key that encrypted the vault file"
+    }
+  }
+}
