@@ -13,6 +13,5 @@ export interface Signature {
 }
 
 export interface RawSignature extends AppTableItem {
-  publicKey: string;
   signature: string;
 }

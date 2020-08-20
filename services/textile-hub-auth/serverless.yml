@@ -39,10 +39,18 @@ package:
     - "**/node_modules/aws-sdk/**" # included on Lambda.
 
 functions:
-  websocket:
-    provisionedConcurrency: 5
-    handler: dist/index.handler
-    timeout: 15
+  wsConnection:
+    handler: dist/ws/default.handler
+    events:
+      - websocket: $connect
+      - websocket: $disconnect
+      - websocket: $default
+
+  wsToken:
+    handler: dist/ws/token.handler
+    timeout: 60
+    events:
+      - websocket: token
     environment:
       JWT_SECRET: ${ssm:txl-hub-jwt-secret-${self:provider.stage}~true}
       TXL_USER_KEY: ${ssm:txl-user-key-${self:provider.stage}~true}
@@ -57,17 +65,13 @@ functions:
             - Ref: AWS::Region
             - .amazonaws.com/
             - ${self:provider.stage}
+  wsChallenge:
+    handler: dist/ws/challenge.handler
     events:
-      - websocket:
-          route: $connect
-      - websocket:
-          route: token
-      - websocket:
-          route: challenge
-      - websocket:
-          route: $default
-      - websocket:
-          route: $disconnect
+      - websocket: challenge
+    environment:
+      ENV: ${self:provider.stage}
+
   authorizerFunc:
     handler: dist/authorizer.handler
     environment:
