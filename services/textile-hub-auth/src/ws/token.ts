@@ -5,6 +5,7 @@ import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
 import { defer } from 'rxjs';
 import { retryWhen, delay, take, switchMap } from 'rxjs/operators';
+import multibase from 'multibase';
 import { AuthContext } from '../authorizer';
 
 (global as any).WebSocket = require('isomorphic-ws');
@@ -111,10 +112,15 @@ export const handler = async function(
     }
   );
 
-  const user = await identityDb.getIdentityByPublicKey(pubkey).catch(e => {
+  const hexPubKey = multibase
+    .decode(pubkey)
+    .toString('hex')
+    .substr(-64);
+
+  const user = await identityDb.getIdentityByPublicKey(hexPubKey).catch(e => {
     if (e instanceof NotFoundError) {
       return identityDb.createIdentity({
-        publicKey: pubkey,
+        publicKey: hexPubKey,
       });
     }
 
@@ -122,7 +128,7 @@ export const handler = async function(
   });
 
   const authPayload: AuthContext = {
-    pubkey,
+    pubkey: hexPubKey,
     uuid: user.uuid,
   };
 
