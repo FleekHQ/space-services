@@ -45,7 +45,7 @@ const sendMessageToClient = (
     })
     .promise();
 
-const findChallengeAnswer = (pubkey: string): Promise<Uint8Array> => {
+const findChallengeAnswer = (pubkey: string): Promise<Buffer> => {
   const source = defer(() => sigDb.getSignatureByPublicKey(pubkey));
 
   return source
@@ -58,7 +58,7 @@ const findChallengeAnswer = (pubkey: string): Promise<Uint8Array> => {
           console.log(e);
         }
 
-        return new Uint8Array(Buffer.from(row.signature, 'base64'));
+        return Buffer.from(row.signature, 'base64');
       }),
       retryWhen(errors => errors.pipe(delay(1000), take(15)))
     )
