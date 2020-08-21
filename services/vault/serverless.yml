@@ -14,7 +14,6 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource:
         - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
         - Fn::Join:
@@ -34,6 +33,10 @@ package:
     - "**/node_modules/aws-sdk/**" # included on Lambda.
 
 functions:
+  authorizerFunc:
+    handler: dist/authorizer.handler
+    environment:
+      JWT_SECRET: ${ssm:txl-hub-jwt-secret-${self:provider.stage}~true}
   storeVault:
     handler: dist/index.storeVault
     environment:
@@ -44,6 +47,21 @@ functions:
           method: post
           path: /vaults
           cors: true
+          authorizer:
+            name: authorizerFunc
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
           request:
             schema:
               application/json: ${file(schemas/store-vault.json)}
+      - http:
+          method: post
+          path: /vaults/{uuid}
+          cors: true
+          request:
+            schema:
+              application/json: ${file(schemas/retrieve-vault.json)}
+            parameters:
+              paths:
+                uuid: true
