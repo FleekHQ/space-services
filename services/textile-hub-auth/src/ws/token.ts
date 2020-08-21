@@ -132,7 +132,7 @@ export const handler = async function(
 
   const payload = {
     ...auth,
-    token: token,
+    token,
     key: process.env.USER_API_KEY,
     appToken,
   };
