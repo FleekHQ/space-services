@@ -5,13 +5,14 @@ import { createAPISig, Client } from '@textile/hub';
  *
  * seconds (300) time until the sig expires
  */
-export const getAPISig = (seconds: number = 300) => {
+export const getAPISig = (seconds = 300) => {
   const expiration = new Date(Date.now() + 1000 * seconds);
   return createAPISig(process.env.TXL_USER_SECRET, expiration);
 };
 
 export const createTextileClient = async (): Promise<Client> => {
   const API = process.env.API || undefined;
+  console.log('Creating textile client with', process.env);
 
   const client = await Client.withKeyInfo(
     {

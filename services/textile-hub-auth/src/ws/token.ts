@@ -17,7 +17,7 @@ interface TokenRequestPayload {
 }
 
 const STAGE = process.env.ENV;
-const JWT_SECRET = process.env.JWT_SECRET;
+const { JWT_SECRET } = process.env;
 
 const sigDb = new SignatureModel(STAGE);
 const identityDb = new IdentityModel(STAGE);
@@ -51,7 +51,10 @@ const findChallengeAnswer = (pubkey: string): Promise<Buffer> => {
           console.log(e);
         }
 
-        return Buffer.from(row.signature, 'base64');
+        console.log('decoding sig: ', row.signature);
+        const sig = multibase.decode(row.signature);
+        console.log('got sig: ', sig);
+        return sig;
       }),
       retryWhen(errors => errors.pipe(delay(1000), take(15)))
     )
