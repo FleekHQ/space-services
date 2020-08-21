@@ -1,5 +1,4 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { Client } from '@textile/hub';
 import { SignatureModel, IdentityModel, NotFoundError } from '@packages/models';
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
@@ -7,6 +6,7 @@ import { defer } from 'rxjs';
 import { retryWhen, delay, take, switchMap } from 'rxjs/operators';
 import multibase from 'multibase';
 import { AuthContext } from '../authorizer';
+import { createTextileClient, getAPISig } from './utils';
 
 (global as any).WebSocket = require('isomorphic-ws');
 
@@ -21,19 +21,11 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const sigDb = new SignatureModel(STAGE);
 const identityDb = new IdentityModel(STAGE);
+
 const apig = new AWS.ApiGatewayManagementApi({
   apiVersion: '2018-11-29',
   endpoint: process.env.APIG_ENDPOINT,
 });
-
-const createTextileClient = async (): Promise<Client> => {
-  const client = await Client.withKeyInfo({
-    key: process.env.TXL_USER_KEY,
-    secret: process.env.TXL_USER_SECRET,
-  });
-
-  return client;
-};
 
 const sendMessageToClient = (
   connectionId: string,
@@ -136,9 +128,18 @@ export const handler = async function(
     expiresIn: '1d',
   });
 
+  const auth = await getAPISig(24 * 3600);
+
+  const payload = {
+    ...auth,
+    token: token,
+    key: process.env.USER_API_KEY,
+    appToken,
+  };
+
   await sendMessageToClient(connectionId, {
     type: 'token',
-    value: { token, appToken },
+    value: payload,
   });
 
   return { statusCode: 200, body: '' };

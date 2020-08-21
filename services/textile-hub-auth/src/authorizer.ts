@@ -2,7 +2,7 @@ import {
   CustomAuthorizerResult,
   Callback,
   Context,
-  CustomAuthorizerEvent
+  CustomAuthorizerEvent,
 } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 
