@@ -2,17 +2,11 @@
   "definitions": {},
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "title": "Store Vault",
+  "title": "Retrieve Vault",
   "required": [
-    "vault",
     "vsk"
   ],
   "properties": {
-    "vault": {
-      "type": "string",
-      "title": "Vault File",
-      "description": "The encrypted vault file content"
-    },
     "vsk": {
       "type": "string",
       "title": "Vault Service Key",

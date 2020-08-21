@@ -11,7 +11,7 @@ Stores a vault (overrides any existing ones for the given `uuid`). Requires the 
 Request
 
 ```
-POST /vaults/:address
+POST /vaults
 Headers: {
   Authorization: :token
 }
@@ -26,4 +26,26 @@ Response:
 
 ```
 200
+```
+
+### Retrieve Vault
+
+Retrieves a vault. Requires the client to send a correct `vsk`. To understand the protocol, see the [Space Daemon Vault Documentation](https://github.com/FleekHQ/space-daemon/blob/master/docs/crypto/vault.md). This request is a POST instead of a GET to prevent caching the vsk as it would be sent as a query string.
+
+Request
+
+```
+POST /vaults/:uuid
+Raw Body: {
+  "vsk": "theVaultServiceKey",
+}
+```
+
+Response:
+
+```
+200
+{
+  encryptedVault: "someEncryptedContent",
+}
 ```
