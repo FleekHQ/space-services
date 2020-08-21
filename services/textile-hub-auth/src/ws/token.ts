@@ -137,6 +137,8 @@ export const handler = async function(
     appToken,
   };
 
+  console.log('sending token payload', payload);
+
   await sendMessageToClient(connectionId, {
     type: 'token',
     value: payload,
