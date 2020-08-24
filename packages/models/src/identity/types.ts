@@ -24,6 +24,7 @@ export interface IdentityRecord {
   // Date of creation in ISO format
   createdAt: string;
 
+  avatarUrl?: string;
   // TODO: Twitter handle or other identity providers
 }
 
@@ -39,11 +40,13 @@ export interface RawIdentityRecord extends AppTableItem {
 
   // Date of creation in ISO format
   createdAt: string;
+
+  avatarUrl?: string;
 }
 
 export interface CreateProofInput {
   // The type of proof
-  proofType: ProofType;
+  type: ProofType;
 
   // The value of the proof. E.g. if this is an email proof, the value would be the actual email
   value: string;
@@ -58,7 +61,7 @@ export enum ProofType {
 
 export interface ProofRecord {
   // The type of proof
-  proofType: ProofType;
+  type: ProofType;
 
   // The value of the proof. E.g. if this is an email proof, the value would be the actual email
   value: string;
@@ -72,7 +75,7 @@ export interface ProofRecord {
 
 export interface RawProofRecord extends AppTableItem {
   // The type of proof
-  proofType: ProofType;
+  type: ProofType;
 
   // The value of the proof. E.g. if this is an email proof, the value would be the actual email
   value: string;
@@ -84,7 +87,6 @@ export interface RawProofRecord extends AppTableItem {
   createdAt: string;
 }
 
-
 export interface UsernameRecord {
   username: string;
   uuid: string;
@@ -93,8 +95,7 @@ export interface UsernameRecord {
 
 export interface RawUsernameRecord extends AppTableItem {
   createdAt: string;
-};
-
+}
 
 export interface AddressRecord {
   address: string;
@@ -104,4 +105,4 @@ export interface AddressRecord {
 
 export interface RawAddressRecord extends AppTableItem {
   createdAt: string;
-};
+}

@@ -15,10 +15,8 @@ provider:
         - "arn:aws:ssm:${self:provider.region}:*:parameter/*"
     - Effect: Allow
       Action:
-        - dynamodb:Query
         - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
         - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
@@ -40,14 +38,14 @@ package:
 
 functions:
   wsConnection:
-    handler: dist/ws/default.handler
+    handler: dist/default.handler
     events:
       - websocket: $connect
       - websocket: $disconnect
       - websocket: $default
 
   wsToken:
-    handler: dist/ws/token.handler
+    handler: dist/token.handler
     timeout: 60
     events:
       - websocket: token
@@ -66,67 +64,8 @@ functions:
             - .amazonaws.com/
             - ${self:provider.stage}
   wsChallenge:
-    handler: dist/ws/challenge.handler
+    handler: dist/challenge.handler
     events:
       - websocket: challenge
     environment:
       ENV: ${self:provider.stage}
-
-  authorizerFunc:
-    handler: dist/authorizer.handler
-    environment:
-      JWT_SECRET: ${ssm:txl-hub-jwt-secret-${self:provider.stage}~true}
-
-  changeUsername:
-    memorySize: 128
-    handler: dist/changeUsername.handler
-    environment:
-      REGION: ${self:provider.region}
-      ENV: ${opt:stage}
-    events:
-      - http:
-          path: /identity/username
-          method: POST
-          authorizer:
-            name: authorizerFunc
-            identitySource: method.request.header.Authorization
-            type: token
-            resultTtlInSeconds: 0
-
-  updateIdentity:
-    memorySize: 128
-    handler: dist/updateIdentity.handler
-    environment:
-      REGION: ${self:provider.region}
-      ENV: ${opt:stage}
-    events:
-      - http:
-          path: /identity
-          method: PUT
-          authorizer:
-            name: authorizerFunc
-            identitySource: method.request.header.Authorization
-            type: token
-            resultTtlInSeconds: 0
-  uploadAvatar:
-    memorySize: 128
-    handler: dist/uploadAvatar.handler
-    environment:
-      REGION: ${self:provider.region}
-      IPFS_HOST: ${ssm:space-ipfs-host-${self:provider.stage}~true}
-      ENV: ${opt:stage}
-    events:
-      - http:
-          path: /identity/avatar
-          method: POST
-          authorizer:
-            name: authorizerFunc
-            identitySource: method.request.header.Authorization
-            type: token
-            resultTtlInSeconds: 0
-    # VPC configuration is needed if your IPFS node sits inside private subnet
-    vpc:
-      securityGroupIds:
-        - ${ssm:space-ipfs-sg}
-      subnetIds:
-        - ${ssm:space-ipfs-subnet}

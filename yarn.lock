@@ -10506,7 +10506,7 @@ ipfs-core-utils@^0.3.2:
     it-map "^1.0.0"
     it-peekable "0.0.1"
 
-ipfs-http-client@^46.0.0:
+ipfs-http-client@^46.0.1:
   version "46.0.1"
   resolved "https://registry.yarnpkg.com/ipfs-http-client/-/ipfs-http-client-46.0.1.tgz#72c69fb8ab8f3c312573d15f28b93a130a033618"
   integrity sha512-/AK3lpeoxzyagmuAix1BNmDH/R5PpB+VdFtjV6mC57XE6/OoYl5FCmgxOtz/gusfnTLLjm87i9I5+4IbuzVhFg==
