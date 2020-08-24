@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken';
 import { defer } from 'rxjs';
 import { retryWhen, delay, take, switchMap } from 'rxjs/operators';
 import multibase from 'multibase';
-import { AuthContext } from '../authorizer';
 import { createTextileClient, getAPISig } from './utils';
 
 (global as any).WebSocket = require('isomorphic-ws');
@@ -14,6 +13,11 @@ interface TokenRequestPayload {
   data: {
     pubkey: string;
   };
+}
+
+interface AuthContext {
+  uuid: string;
+  pubkey: string;
 }
 
 const STAGE = process.env.ENV;
@@ -128,7 +132,7 @@ export const handler = async function(
   };
 
   const appToken = jwt.sign(authPayload, JWT_SECRET, {
-    expiresIn: '1d',
+    expiresIn: '30d',
   });
 
   const auth = await getAPISig(24 * 3600);

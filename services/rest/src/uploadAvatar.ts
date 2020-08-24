@@ -16,24 +16,24 @@ export const handler = async function(
 ): Promise<APIGatewayProxyResult> {
   const { uuid } = event.requestContext.authorizer;
 
+  const buffer = Buffer.from(event.body, 'base64');
+
   try {
-    const result = await ipfsClient.add({ content: event.body });
+    const result = await ipfsClient.add({ content: buffer });
     const avatarUrl = `https://ipfs.fleek.co/ipfs/${result.cid.toString()}`;
 
-    await identityDb.updateIdentity(uuid, { avatarUrl });
+    const data = await identityDb.updateIdentity(uuid, { avatarUrl });
 
     return {
-      statusCode: 200,
-      body: JSON.stringify({ avatarUrl }),
-      isBase64Encoded: false,
+      statusCode: 201,
+      body: JSON.stringify({ data }),
     };
   } catch (e) {
     console.log(e);
 
     return {
       statusCode: 500,
-      body: 'Internal server error',
-      isBase64Encoded: false,
+      body: JSON.stringify({ error: 'Internal server error' }),
     };
   }
 };
