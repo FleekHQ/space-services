@@ -21,10 +21,15 @@ export interface IdentityRecord {
   // Human readable identifier
   username?: string;
 
+  // Non-unique display name
+  displayName?: string;
+
   // Date of creation in ISO format
   createdAt: string;
 
+  // HTTP link to avatar image
   avatarUrl?: string;
+
   // TODO: Twitter handle or other identity providers
 }
 
@@ -38,9 +43,13 @@ export interface RawIdentityRecord extends AppTableItem {
   // Human readable identifier
   username?: string;
 
+  // Non-unique display name
+  displayName?: string;
+
   // Date of creation in ISO format
   createdAt: string;
 
+  // HTTP link to avatar image
   avatarUrl?: string;
 }
 
