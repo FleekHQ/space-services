@@ -55,6 +55,7 @@ export const parseDbObjectToIdentity = (
   uuid: dbObject.pk,
   address: dbObject.address,
   username: dbObject.username,
+  displayName: dbObject.displayName,
   publicKey: dbObject.publicKey,
   createdAt: dbObject.createdAt,
   avatarUrl: dbObject.avatarUrl,
