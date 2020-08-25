@@ -16,6 +16,10 @@ const STAGE = process.env.ENV;
 
 const vaultDb = new VaultModel(STAGE);
 
+const incorrectUuidOrPass = new UnauthorizedError(
+  'Incorrect uuid or password.'
+);
+
 export const retrieveVault = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -32,10 +36,16 @@ export const retrieveVault = async (
       // We compute the vsk hash again. If it doesn't match the stored one,
       // it means either the uuid or the password is wrong.
       const vskHash = computeVskHash(vsk, uuid);
-      const storedVault = await vaultDb.getVaultByUuid(uuid);
+      let storedVault;
+      try {
+        storedVault = await vaultDb.getVaultByUuid(uuid);
+      } catch (error) {
+        // The stored vault was not found
+        throw incorrectUuidOrPass;
+      }
 
       if (vskHash.toString('hex') !== storedVault.kdfHash) {
-        throw new UnauthorizedError('Incorrect uuid or password.');
+        throw incorrectUuidOrPass;
       }
 
       // If we are here, it means the password is correct

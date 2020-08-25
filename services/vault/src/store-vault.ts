@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyResult, APIGatewayProxyEventBase } from 'aws-lambda';
 import { VaultModel, UnauthorizedError } from '@packages/models';
 import { processRequest } from '@packages/apitools';
 import { StoreVaultRequest } from './types';
@@ -11,8 +11,13 @@ if (!process?.env?.ENV) {
 const STAGE = process.env.ENV;
 const vaultDb = new VaultModel(STAGE);
 
+export interface AuthContext {
+  uuid: string;
+  pubkey: string;
+}
+
 export const storeVault = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> => {
   const result = await processRequest(
     async (): Promise<void> => {
