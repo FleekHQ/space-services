@@ -66,7 +66,7 @@ export class IdentityModel extends BaseModel {
     const createdAt = new Date(Date.now()).toISOString();
 
     const newProof = {
-      proofType: input.proofType,
+      type: input.type,
       uuid: input.uuid,
       value: input.value,
       createdAt,
@@ -124,11 +124,14 @@ export class IdentityModel extends BaseModel {
     return this.getIdentityByUuid(record.uuid);
   }
 
-  public async updateIdentity(uuid: string, payload: Record<string, any>) {
+  public async updateIdentity(
+    uuid: string,
+    payload: Record<string, any>
+  ): Promise<IdentityRecord> {
     // check that identity exists
     await this.getIdentityByUuid(uuid);
 
-    const allowedKeys = ['displayName', 'avatarUrl'];
+    const allowedKeys = ['displayName', 'avatarUrl', 'username'];
 
     // update uuid with new username
     const Key = getIdentityPrimaryKey(uuid);
@@ -150,6 +153,10 @@ export class IdentityModel extends BaseModel {
       throw new Error('Invalid payload.');
     }
 
+    if (payload.username) {
+      await this.changeUsername(uuid, payload.username);
+    }
+
     const UpdateExpression = `SET ${updates.join(',')}`;
 
     const params = {
@@ -159,12 +166,15 @@ export class IdentityModel extends BaseModel {
       ExpressionAttributeValues,
       ExpressionAttributeNames,
       UpdateExpression,
+      ReturnValues: 'ALL_NEW',
     };
 
-    await this.update(params);
+    const res = await this.update(params);
+
+    return parseDbObjectToIdentity(res.Attributes as RawIdentityRecord);
   }
 
-  public async changeUsername(uuid: string, username: string) {
+  private async changeUsername(uuid: string, username: string) {
     const usernameExists = await this.getIdentityByUsername(username).catch(
       () => false
     );
@@ -183,28 +193,6 @@ export class IdentityModel extends BaseModel {
         createdAt: new Date().toISOString(),
       })
     );
-
-    // update uuid with new username
-    const Key = getIdentityPrimaryKey(uuid);
-
-    const ExpressionAttributeValues = {
-      ':username': username,
-    };
-    const ExpressionAttributeNames = {
-      '#username': 'username',
-    };
-    const UpdateExpression = 'SET #username = :username';
-
-    const params = {
-      TableName: this.table,
-      Select: 'ALL_PROJECTED_ATTRIBUTES',
-      Key,
-      ExpressionAttributeValues,
-      ExpressionAttributeNames,
-      UpdateExpression,
-    };
-
-    await this.update(params);
 
     // release old username
     await this.delete(getUsernamePrimaryKey(identity.username));

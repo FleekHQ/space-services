@@ -55,15 +55,17 @@ export const parseDbObjectToIdentity = (
   uuid: dbObject.pk,
   address: dbObject.address,
   username: dbObject.username,
+  displayName: dbObject.displayName,
   publicKey: dbObject.publicKey,
   createdAt: dbObject.createdAt,
+  avatarUrl: dbObject.avatarUrl,
 });
 
 export const mapProofDbObject = (proof: ProofRecord): RawProofRecord => {
   return {
-    ...getProofPrimaryKey(proof.value, proof.proofType),
+    ...getProofPrimaryKey(proof.value, proof.type),
     gs1pk: proof.uuid,
-    gs1sk: `${PROOF_KEY}#${proof.proofType}`,
+    gs1sk: `${PROOF_KEY}#${proof.type}`,
     ...proof,
   };
 };
@@ -73,7 +75,7 @@ export const parseDbObjectToProof = (
 ): ProofRecord => ({
   value: dbObject.value,
   uuid: dbObject.uuid,
-  proofType: dbObject.proofType,
+  type: dbObject.type,
   createdAt: dbObject.createdAt,
 });
 

@@ -15,10 +15,8 @@ provider:
         - "arn:aws:ssm:${self:provider.region}:*:parameter/*"
     - Effect: Allow
       Action:
-        - dynamodb:Query
         - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
         - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
@@ -39,10 +37,18 @@ package:
     - "**/node_modules/aws-sdk/**" # included on Lambda.
 
 functions:
-  websocket:
-    provisionedConcurrency: 5
-    handler: dist/index.handler
-    timeout: 15
+  wsConnection:
+    handler: dist/default.handler
+    events:
+      - websocket: $connect
+      - websocket: $disconnect
+      - websocket: $default
+
+  wsToken:
+    handler: dist/token.handler
+    timeout: 60
+    events:
+      - websocket: token
     environment:
       JWT_SECRET: ${ssm:txl-hub-jwt-secret-${self:provider.stage}~true}
       TXL_USER_KEY: ${ssm:txl-user-key-${self:provider.stage}~true}
@@ -57,72 +63,9 @@ functions:
             - Ref: AWS::Region
             - .amazonaws.com/
             - ${self:provider.stage}
+  wsChallenge:
+    handler: dist/challenge.handler
     events:
-      - websocket:
-          route: $connect
-      - websocket:
-          route: token
-      - websocket:
-          route: challenge
-      - websocket:
-          route: $default
-      - websocket:
-          route: $disconnect
-  authorizerFunc:
-    handler: dist/authorizer.handler
+      - websocket: challenge
     environment:
-      JWT_SECRET: ${ssm:txl-hub-jwt-secret-${self:provider.stage}~true}
-
-  changeUsername:
-    memorySize: 128
-    handler: dist/changeUsername.handler
-    environment:
-      REGION: ${self:provider.region}
-      ENV: ${opt:stage}
-    events:
-      - http:
-          path: /identity/username
-          method: POST
-          authorizer:
-            name: authorizerFunc
-            identitySource: method.request.header.Authorization
-            type: token
-            resultTtlInSeconds: 0
-
-  updateIdentity:
-    memorySize: 128
-    handler: dist/updateIdentity.handler
-    environment:
-      REGION: ${self:provider.region}
-      ENV: ${opt:stage}
-    events:
-      - http:
-          path: /identity
-          method: PUT
-          authorizer:
-            name: authorizerFunc
-            identitySource: method.request.header.Authorization
-            type: token
-            resultTtlInSeconds: 0
-  uploadAvatar:
-    memorySize: 128
-    handler: dist/uploadAvatar.handler
-    environment:
-      REGION: ${self:provider.region}
-      IPFS_HOST: ${ssm:space-ipfs-host-${self:provider.stage}~true}
-      ENV: ${opt:stage}
-    events:
-      - http:
-          path: /identity/avatar
-          method: POST
-          authorizer:
-            name: authorizerFunc
-            identitySource: method.request.header.Authorization
-            type: token
-            resultTtlInSeconds: 0
-    # VPC configuration is needed if your IPFS node sits inside private subnet
-    vpc:
-      securityGroupIds:
-        - ${ssm:space-ipfs-sg}
-      subnetIds:
-        - ${ssm:space-ipfs-subnet}
+      ENV: ${self:provider.stage}
