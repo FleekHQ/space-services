@@ -11,12 +11,14 @@
     "vault": {
       "type": "string",
       "title": "Vault File",
-      "description": "The encrypted vault file content"
+      "description": "The encrypted vault file content",
+      "pattern": "^(?!\\s*$).+"
     },
     "vsk": {
       "type": "string",
       "title": "Vault Service Key",
-      "description": "Client-side key derivation of the key that encrypted the vault file"
+      "description": "Client-side key derivation of the key that encrypted the vault file",
+      "pattern": "^(?!\\s*$).+"
     }
   }
 }
