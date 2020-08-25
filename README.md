@@ -35,8 +35,11 @@ We use AWS's Parameter Store to store secret values that will get injected as en
 - `space-ipfs-host-${env}` - Public or Private address of IPFS node (used for uploading avatar image)
 - `space-ipfs-sg` - AWS Security Group which is allowed to access IPFS node
 - `space-ipfs-subnet` - AWS Private Subnet ID where IPFS node is deployed
+- `org-arn` (This is only the ID provided by AWS to find resources by their ARN. Generally a 12-digit integer)
+- `vault-salt-secret-${env}` (Random string used for vault salt)
 
-(where `env` is the current deployed environment as prd or stg)
+
+Where `env` is the current deployed environment, e.g. prd or stg.
 
 ### Deploy the resources
 

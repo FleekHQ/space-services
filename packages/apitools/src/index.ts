@@ -17,7 +17,11 @@ const mapErrorToStatusCode: ErrorToStatusCodeInterface = {
 
 const getErrorMessage = (err: Error): string => {
   // If the error is a validation error, we return its message
-  if (err.name === 'ValidationError' || err.name === 'NotFoundError') {
+  if (
+    err.name === 'ValidationError' ||
+    err.name === 'NotFoundError' ||
+    err.name === 'UnauthorizedError'
+  ) {
     return err.message;
   }
 

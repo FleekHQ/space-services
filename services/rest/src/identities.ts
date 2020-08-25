@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { APIGatewayProxyEventBase, APIGatewayProxyResult } from 'aws-lambda';
 import { IdentityModel } from '@packages/models';
 import { AuthContext } from './authorizer';
