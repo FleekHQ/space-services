@@ -1,7 +1,8 @@
+/* eslint-disable import/prefer-default-export */
 import { APIGatewayProxyEventBase, APIGatewayProxyResult } from 'aws-lambda';
 import { IdentityModel } from '@packages/models';
-import { AuthContext } from './authorizer';
 import { IdentityRecord } from '@packages/models/dist/identity/types';
+import { AuthContext } from './authorizer';
 
 const STAGE = process.env.ENV;
 const identityDb = new IdentityModel(STAGE);
@@ -16,7 +17,7 @@ export const handler = async function(
 ): Promise<APIGatewayProxyResult> {
   const { address, username } = event.queryStringParameters;
 
-  console.log(event.queryStringParameters)
+  console.log(event.queryStringParameters);
 
   if (!address && !username) {
     return {
@@ -31,22 +32,24 @@ export const handler = async function(
   const filterKey = address ? 'address' : 'username';
   const values = event.queryStringParameters[filterKey].split(',');
 
-  let data = await Promise.all(values.map(val => queryBy[filterKey](val).catch(() => null)));
+  let data = await Promise.all(
+    values.map(val => queryBy[filterKey](val).catch(() => null))
+  );
 
   // for (let val of values) {
   //   data[val] = await queryBy[filterKey](val).catch(() => null);
   // }
 
-  if(data.length === 1) {
+  if (data.length === 1) {
     data = data.pop();
 
-    if(!data) {
+    if (!data) {
       return {
         statusCode: 404,
         body: JSON.stringify({
           error: 'Identity not found.',
-        })
-      }
+        }),
+      };
     }
   }
 

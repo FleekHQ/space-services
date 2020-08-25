@@ -1,18 +1,35 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { CreateVaultInput, Vault, RawVault } from './types';
 import { BaseModel } from '../base';
+import { PrimaryKey } from '../types';
+
 import { NotFoundError } from '../errors';
 
-const mapVaultToDbObject = (vault: Vault): RawVault => ({
-  pk: `vault#${vault.uuid}`,
-  sk: vault.uuid,
-  ...vault,
+const VAULT_KEY = 'vault';
+
+export const getVaultPrimaryKey = (uuid: string): PrimaryKey => ({
+  pk: uuid,
+  sk: VAULT_KEY,
 });
 
+const mapVaultToDbObject = (vault: Vault): RawVault => {
+  const { uuid, ...rest } = vault;
+
+  return {
+    ...getVaultPrimaryKey(uuid),
+    ...rest,
+    uuid,
+  };
+};
+
 const parseDbObjectToVault = (raw: RawVault): Vault => {
-  const vault = { ...raw };
-  delete vault.pk;
-  delete vault.sk;
+  const vault: Vault = {
+    vault: raw.vault,
+    kdfHash: raw.kdfHash,
+    uuid: raw.uuid,
+    createdAt: raw.createdAt,
+  };
+
   return vault;
 };
 
@@ -40,20 +57,15 @@ export class VaultModel extends BaseModel {
   }
 
   public async getVaultByUuid(uuid: string): Promise<Vault> {
-    const stubVault = mapVaultToDbObject({
-      uuid,
-      vault: '',
-      kdfHash: '',
-      createdAt: '',
-    });
+    const rawVault = await this.get(getVaultPrimaryKey(uuid)).then(
+      result => result.Item as RawVault
+    );
 
-    const rawVault = await this.getItem(stubVault.pk, stubVault.sk);
-
-    if (!rawVault.Item || !rawVault.Item.pk) {
+    if (!rawVault) {
       throw new NotFoundError(`Vault for uuid ${uuid} not found.`);
     }
 
-    return parseDbObjectToVault(rawVault.Item as RawVault);
+    return parseDbObjectToVault(rawVault);
   }
 }
 

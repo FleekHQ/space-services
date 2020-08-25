@@ -14,7 +14,7 @@ export class BaseModel {
   protected put(
     data: DocumentClient.PutItemInputAttributeMap
   ): Promise<DocumentClient.PutItemOutput> {
-    const params = {
+    const params: DocumentClient.PutItemInput = {
       TableName: this.table,
       Item: data,
     };

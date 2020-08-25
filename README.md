@@ -33,8 +33,11 @@ We use AWS's Parameter Store to store secret values that will get injected as en
 - txl-user-key-${env}
 - txl-user-secret-${env}
 - txl-hub-url-${env}
+- org-arn (This is only the ID provided by AWS to find resources by their ARN. Generally a 12-digit integer)
+- vault-salt-secret-${env} (Random string used for vault salt)
 
-(where `env` is the current deployed environment as prd or stg)
+
+Where `env` is the current deployed environment, e.g. prd or stg.
 
 ### Deploy the resources
 
