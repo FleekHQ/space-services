@@ -25,6 +25,8 @@ import { validateIdentity } from './validations';
 import { BaseModel } from '../base';
 import { NotFoundError, ValidationError } from '../errors';
 
+const allowedIdentityKeys = ['displayName', 'avatarUrl', 'username'];
+
 export class IdentityModel extends BaseModel {
   constructor(env: string, client: DocumentClient = new DocumentClient()) {
     const table = `space_table_${env}`;
@@ -131,8 +133,6 @@ export class IdentityModel extends BaseModel {
     // check that identity exists
     await this.getIdentityByUuid(uuid);
 
-    const allowedKeys = ['displayName', 'avatarUrl', 'username'];
-
     // update uuid with new username
     const Key = getIdentityPrimaryKey(uuid);
 
@@ -142,7 +142,7 @@ export class IdentityModel extends BaseModel {
     const updates = [];
 
     Object.keys(payload).forEach(key => {
-      if (allowedKeys.indexOf(key) >= 0) {
+      if (allowedIdentityKeys.includes(key)) {
         ExpressionAttributeValues[`:${key}`] = payload[key];
         ExpressionAttributeNames[`#${key}`] = key;
         updates.push(`#${key} = :${key}`);

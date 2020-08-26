@@ -13,7 +13,7 @@ export const validateIdentity = async (
   identity: Identity
 ): Promise<void> => {
   if (!identity.publicKey.match(/^[a-fA-F\d]{64}$/)) {
-    throw new ValidationError('Address must be in format ^[a-fA-Fd]{64}$');
+    throw new ValidationError('Public key must be in format ^[a-fA-Fd]{64}$');
   }
 
   let foundIdentityByAddress = true;

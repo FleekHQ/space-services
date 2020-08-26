@@ -11,6 +11,7 @@ const ipfsClient = buildIpfsClient({
   port: '5001',
 });
 
+// eslint-disable-next-line
 export const handler = async function(
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> {

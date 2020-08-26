@@ -1,7 +1,6 @@
 import { APIGatewayProxyEventBase, APIGatewayProxyResult } from 'aws-lambda';
 import { IdentityModel } from '@packages/models';
 import { AuthContext } from './authorizer';
-import { IdentityRecord } from '@packages/models/dist/identity/types';
 
 const STAGE = process.env.ENV;
 const identityDb = new IdentityModel(STAGE);
@@ -11,12 +10,13 @@ const queryBy = {
   username: (str: string) => identityDb.getIdentityByUsername(str),
 };
 
+// eslint-disable-next-line
 export const handler = async function(
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> {
   const { address, username } = event.queryStringParameters;
 
-  console.log(event.queryStringParameters)
+  console.log(event.queryStringParameters);
 
   if (!address && !username) {
     return {
@@ -31,22 +31,24 @@ export const handler = async function(
   const filterKey = address ? 'address' : 'username';
   const values = event.queryStringParameters[filterKey].split(',');
 
-  let data = await Promise.all(values.map(val => queryBy[filterKey](val).catch(() => null)));
+  let data = await Promise.all(
+    values.map(val => queryBy[filterKey](val).catch(() => null))
+  );
 
   // for (let val of values) {
   //   data[val] = await queryBy[filterKey](val).catch(() => null);
   // }
 
-  if(data.length === 1) {
+  if (data.length === 1) {
     data = data.pop();
 
-    if(!data) {
+    if (!data) {
       return {
         statusCode: 404,
         body: JSON.stringify({
           error: 'Identity not found.',
-        })
-      }
+        }),
+      };
     }
   }
 

@@ -6,7 +6,7 @@ import {
 } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const { JWT_SECRET } = process.env;
 
 export interface AuthContext {
   uuid: string;
@@ -58,8 +58,6 @@ export const handler = async function(
   _context: Context,
   callback: Callback<CustomAuthorizerResult>
 ) {
-  console.log('Received event:', JSON.stringify(event, null, 2));
-
   // Retrieve request parameters from the Lambda function input:
   const token = event.authorizationToken;
 
@@ -82,7 +80,3 @@ export const handler = async function(
     callback('Unauthorized request');
   }
 };
-
-// const generateDeny = function(principalId, resource) {
-//   return generatePolicy(principalId, 'Deny', resource);
-// };
