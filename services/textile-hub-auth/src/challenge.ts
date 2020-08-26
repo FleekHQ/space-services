@@ -11,6 +11,7 @@ interface ChallengePayload {
 const STAGE = process.env.ENV;
 const sigDb = new SignatureModel(STAGE);
 
+// eslint-disable-next-line
 export const handler = async function(
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> {

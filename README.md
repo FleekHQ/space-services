@@ -30,9 +30,11 @@ This will be configured in CI soon.
 
 We use AWS's Parameter Store to store secret values that will get injected as env vars into services. The secrets needed are:
 
-- txl-user-key-${env}
-- txl-user-secret-${env}
-- txl-hub-url-${env}
+- `txl-user-key-${env}` - Textile Hub user key
+- `txl-user-secret-${env}` - Textile Hub user secret
+- `space-ipfs-host-${env}` - Public or Private address of IPFS node (used for uploading avatar image)
+- `space-ipfs-sg` - AWS Security Group which is allowed to access IPFS node
+- `space-ipfs-subnet` - AWS Private Subnet ID where IPFS node is deployed
 
 (where `env` is the current deployed environment as prd or stg)
 

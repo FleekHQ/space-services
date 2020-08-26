@@ -19,21 +19,13 @@ const identityNotFoundResponse = {
   body: JSON.stringify({ message: 'Identity was not found.' }),
 };
 
+// eslint-disable-next-line
 export const handler = async function(
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> {
   const { uuid } = event.requestContext.authorizer;
 
   const payload: CreateProofPayload = JSON.parse(event.body);
-
-  if (!payload.type || !payload.value) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({
-        error: 'Fields "type" and "value" are required.',
-      }),
-    };
-  }
 
   if (payload) {
     try {

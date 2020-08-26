@@ -55,16 +55,14 @@ const findChallengeAnswer = (pubkey: string): Promise<Buffer> => {
           console.log(e);
         }
 
-        console.log('decoding sig: ', row.signature);
-        const sig = multibase.decode(row.signature);
-        console.log('got sig: ', sig);
-        return sig;
+        return multibase.decode(row.signature);
       }),
       retryWhen(errors => errors.pipe(delay(1000), take(15)))
     )
     .toPromise();
 };
 
+// eslint-disable-next-line
 export const handler = async function(
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> {
@@ -84,8 +82,6 @@ export const handler = async function(
 
   const client = await createTextileClient();
 
-  console.log('starting get token challenge', { pubkey });
-
   // Multibase (lib used by textile identities) prepends the public key with a "code"
   // https://github.com/multiformats/js-multibase
   const token = await client.getTokenChallenge(
@@ -97,17 +93,10 @@ export const handler = async function(
         value,
       };
 
-      console.log({ challenge });
-      console.log('Sending challenge to client', challengePayload);
       // Send message to client and wait for an answer in sync
       await sendMessageToClient(connectionId, challengePayload);
 
-      console.log('Waiting for client to answer');
-
-      const answer = await findChallengeAnswer(pubkey);
-      console.log({ answer });
-
-      return answer;
+      return findChallengeAnswer(pubkey);
     }
   );
 
@@ -143,8 +132,6 @@ export const handler = async function(
     key: process.env.TXL_USER_KEY,
     appToken,
   };
-
-  console.log('sending token payload', payload);
 
   await sendMessageToClient(connectionId, {
     type: 'token',

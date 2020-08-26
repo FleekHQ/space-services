@@ -1,0 +1,19 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Create proof",
+  "required": ["type", "value"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "title": "Type",
+      "description": "Supported proof types are: 'email', 'twitter'",
+      "pattern": "(email|twitter)"
+    },
+    "value": {
+      "type": "string",
+      "title": "Value"
+    }
+  }
+}

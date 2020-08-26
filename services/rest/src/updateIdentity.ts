@@ -16,6 +16,7 @@ const identityNotFoundResponse = {
   body: JSON.stringify({ message: 'Identity was not found.' }),
 };
 
+// eslint-disable-next-line
 export const handler = async function(
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> {

@@ -1,7 +1,6 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyResult } from 'aws-lambda';
 
-export const handler = async function(
-  event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> {
+// eslint-disable-next-line
+export const handler = async function(): Promise<APIGatewayProxyResult> {
   return { statusCode: 200, body: '' };
 };
