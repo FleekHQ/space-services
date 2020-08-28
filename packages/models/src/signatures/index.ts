@@ -32,7 +32,7 @@ export class SignatureModel extends BaseModel {
     };
 
     const dbItem = mapSignatureDbObject(newSig);
-
+    console.log('putting signature', dbItem);
     await this.put(dbItem);
 
     return newSig;
