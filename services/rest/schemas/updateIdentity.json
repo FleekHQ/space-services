@@ -3,11 +3,8 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "title": "Update Identity",
-  "anyOf": [
-    { "required": ["username"] },
-    { "required": ["displayName"] },
-    { "required": ["avatarUrl"] }
-  ],
+  "minProperties": 1,
+  "additionalProperties": false,
   "properties": {
     "username": {
       "type": "string",

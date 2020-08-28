@@ -48,14 +48,16 @@ const findChallengeAnswer = (pubkey: string): Promise<Buffer> => {
   return source
     .pipe(
       switchMap(async row => {
+        await sigDb.deleteSignatureByPublicKey(row.publicKey);
+
         try {
-          await sigDb.deleteSignatureByPublicKey(row.publicKey);
+          return multibase.decode(row.signature);
         } catch (e) {
-          console.log('error on row removal');
+          console.log('error on row decoding');
           console.log(e);
         }
 
-        return multibase.decode(row.signature);
+        return Buffer.from(row.signature, 'base64');
       }),
       retryWhen(errors => errors.pipe(delay(1000), take(15)))
     )
@@ -96,7 +98,8 @@ export const handler = async function(
       // Send message to client and wait for an answer in sync
       await sendMessageToClient(connectionId, challengePayload);
 
-      return findChallengeAnswer(pubkey);
+      const answer = await findChallengeAnswer(pubkey);
+      return answer;
     }
   );
 
