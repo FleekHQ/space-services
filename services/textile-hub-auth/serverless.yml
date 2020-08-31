@@ -24,13 +24,24 @@ provider:
           - ""
           - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
             - "/*"
+  domain:
+    dev: dev-auth.space.storage
+    stg: stg-auth.space.storage
+    prd: auth.space.storage
 
 plugins:
   - serverless-jetpack
+  - serverless-domain-manager
 
 custom:
   jetpack:
     base: "../../"
+  customDomain:
+    domainName: ${self:provider.domain.${self:provider.stage}}
+    certificateArn: "arn:aws:acm:us-east-1:768127979193:certificate/39a0b5b8-c778-4cce-ad0b-c12cab8fbdf1"
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: false
 
 package:
   exclude:
