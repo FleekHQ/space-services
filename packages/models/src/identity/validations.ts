@@ -1,4 +1,4 @@
-import { Identity } from './types';
+import { IdentityRecord as Identity } from './types';
 
 import { ValidationError } from '../errors';
 
@@ -16,14 +16,6 @@ export const validateIdentity = async (
     throw new ValidationError('Public key must be in format ^[a-fA-Fd]{64}$');
   }
 
-  if (
-    !identity.username.match(/^[a-zA-Z\d](?:[a-zA-Z\d]|-(?=[a-zA-Z\d])){0,38}$/)
-  ) {
-    throw new ValidationError(
-      'Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.'
-    );
-  }
-
   let foundIdentityByAddress = true;
   try {
     await model.getIdentityByAddress(identity.address);
@@ -39,18 +31,30 @@ export const validateIdentity = async (
     );
   }
 
-  let foundIdentityByUsername = true;
-  try {
-    await model.getIdentityByUsername(identity.username);
-  } catch (err) {
-    if (err.name === 'NotFoundError') {
-      foundIdentityByUsername = false;
+  if (identity.username) {
+    if (
+      !identity.username.match(
+        /^[a-zA-Z\d](?:[a-zA-Z\d]|-(?=[a-zA-Z\d])){0,38}$/
+      )
+    ) {
+      throw new ValidationError(
+        'Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.'
+      );
     }
-  }
 
-  if (foundIdentityByUsername) {
-    throw new ValidationError(
-      'An identity with the given username already exists'
-    );
+    let foundIdentityByUsername = true;
+    try {
+      await model.getIdentityByUsername(identity.username);
+    } catch (err) {
+      if (err.name === 'NotFoundError') {
+        foundIdentityByUsername = false;
+      }
+    }
+
+    if (foundIdentityByUsername) {
+      throw new ValidationError(
+        'An identity with the given username already exists'
+      );
+    }
   }
 };

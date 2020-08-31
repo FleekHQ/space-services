@@ -5,10 +5,13 @@ export interface CreateIdentityInput {
   publicKey: string;
 
   // Human readable identifier
-  username: string;
+  username?: string;
 }
 
-export interface Identity {
+export interface IdentityRecord {
+  // UUID
+  uuid: string;
+
   // The public key of the identity
   publicKey: string;
 
@@ -16,15 +19,21 @@ export interface Identity {
   address: string;
 
   // Human readable identifier
-  username: string;
+  username?: string;
+
+  // Non-unique display name
+  displayName?: string;
 
   // Date of creation in ISO format
   createdAt: string;
+
+  // HTTP link to avatar image
+  avatarUrl?: string;
 
   // TODO: Twitter handle or other identity providers
 }
 
-export interface RawIdentity extends AppTableItem {
+export interface RawIdentityRecord extends AppTableItem {
   // The public key of the identity
   publicKey: string;
 
@@ -32,51 +41,77 @@ export interface RawIdentity extends AppTableItem {
   address: string;
 
   // Human readable identifier
-  username: string;
+  username?: string;
+
+  // Non-unique display name
+  displayName?: string;
 
   // Date of creation in ISO format
   createdAt: string;
+
+  // HTTP link to avatar image
+  avatarUrl?: string;
 }
 
 export interface CreateProofInput {
   // The type of proof
-  proofType: ProofType;
+  type: ProofType;
 
   // The value of the proof. E.g. if this is an email proof, the value would be the actual email
   value: string;
 
   // The username of the user this proof belongs to
-  username: string;
+  uuid: string;
 }
 
 export enum ProofType {
   email = 'email',
 }
 
-export interface Proof {
+export interface ProofRecord {
   // The type of proof
-  proofType: ProofType;
+  type: ProofType;
 
   // The value of the proof. E.g. if this is an email proof, the value would be the actual email
   value: string;
 
   // The username of the user this proof belongs to
-  username: string;
+  uuid: string;
 
   // Date of creation in ISO format
   createdAt: string;
 }
 
-export interface RawProof extends AppTableItem {
+export interface RawProofRecord extends AppTableItem {
   // The type of proof
-  proofType: ProofType;
+  type: ProofType;
 
   // The value of the proof. E.g. if this is an email proof, the value would be the actual email
   value: string;
 
   // The username of the user this proof belongs to
-  username: string;
+  uuid: string;
 
   // Date of creation in ISO format
+  createdAt: string;
+}
+
+export interface UsernameRecord {
+  username: string;
+  uuid: string;
+  createdAt: string;
+}
+
+export interface RawUsernameRecord extends AppTableItem {
+  createdAt: string;
+}
+
+export interface AddressRecord {
+  address: string;
+  uuid: string;
+  createdAt: string;
+}
+
+export interface RawAddressRecord extends AppTableItem {
   createdAt: string;
 }

@@ -15,10 +15,8 @@ provider:
         - "arn:aws:ssm:${self:provider.region}:*:parameter/*"
     - Effect: Allow
       Action:
-        - dynamodb:Query
         - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
         - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
@@ -39,14 +37,22 @@ package:
     - "**/node_modules/aws-sdk/**" # included on Lambda.
 
 functions:
-  websocket:
-    provisionedConcurrency: 5
-    handler: dist/index.handler
-    timeout: 15
+  wsConnection:
+    handler: dist/default.handler
+    events:
+      - websocket: $connect
+      - websocket: $disconnect
+      - websocket: $default
+
+  wsToken:
+    handler: dist/token.handler
+    timeout: 60
+    events:
+      - websocket: token
     environment:
+      JWT_SECRET: ${ssm:txl-hub-jwt-secret-${self:provider.stage}~true}
       TXL_USER_KEY: ${ssm:txl-user-key-${self:provider.stage}~true}
       TXL_USER_SECRET: ${ssm:txl-user-secret-${self:provider.stage}~true}
-      TXL_HUB_URL: ${ssm:txl-hub-url-${self:provider.stage}~true}
       ENV: ${self:provider.stage}
       APIG_ENDPOINT:
         Fn::Join:
@@ -56,14 +62,9 @@ functions:
             - Ref: AWS::Region
             - .amazonaws.com/
             - ${self:provider.stage}
+  wsChallenge:
+    handler: dist/challenge.handler
     events:
-      - websocket:
-          route: $connect
-      - websocket:
-          route: token
-      - websocket:
-          route: challenge
-      - websocket:
-          route: $default
-      - websocket:
-          route: $disconnect
+      - websocket: challenge
+    environment:
+      ENV: ${self:provider.stage}

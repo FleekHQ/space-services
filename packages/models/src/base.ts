@@ -165,9 +165,14 @@ export class BaseModel {
   }
 
   protected delete(
-    data: DocumentClient.DeleteItemInput
+    data: DocumentClient.Key
   ): Promise<DocumentClient.DeleteItemOutput> {
-    return this.client.delete(data).promise();
+    const params = {
+      TableName: this.table,
+      Key: data,
+    };
+
+    return this.client.delete(params).promise();
   }
 
   /**

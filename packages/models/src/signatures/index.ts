@@ -5,17 +5,14 @@ import { NotFoundError } from '../errors';
 
 const mapSignatureDbObject = (sig: Signature): RawSignature => {
   return {
-    pk: 'publicKeyToSignature',
-    sk: sig.publicKey,
-    gs1pk: 'signatureToPublicKey',
-    gs1sk: sig.signature,
-    publicKey: sig.publicKey,
+    pk: `sig#${sig.publicKey}`,
+    sk: `signature`,
     signature: sig.signature,
   };
 };
 
 const parseDbObjectToSignature = (raw: RawSignature): Signature => ({
-  publicKey: raw.publicKey,
+  publicKey: raw.pk.split('#').pop(),
   signature: raw.signature,
 });
 
@@ -35,7 +32,7 @@ export class SignatureModel extends BaseModel {
     };
 
     const dbItem = mapSignatureDbObject(newSig);
-
+    console.log('putting signature', dbItem);
     await this.put(dbItem);
 
     return newSig;
@@ -63,11 +60,8 @@ export class SignatureModel extends BaseModel {
     const raw = mapSignatureDbObject(sig);
 
     await this.delete({
-      TableName: this.table,
-      Key: {
-        pk: raw.pk,
-        sk: raw.sk,
-      },
+      pk: raw.pk,
+      sk: raw.sk,
     });
   }
 }
