@@ -35,10 +35,6 @@ export const handler = async function(
     values.map(val => queryBy[filterKey](val).catch(() => null))
   );
 
-  // for (let val of values) {
-  //   data[val] = await queryBy[filterKey](val).catch(() => null);
-  // }
-
   if (data.length === 1) {
     data = data.pop();
 
