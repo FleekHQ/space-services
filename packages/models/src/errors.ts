@@ -23,3 +23,9 @@ export class NotFoundError extends DomainError {
     super(`Not Found Error: ${message}`);
   }
 }
+
+export class UnauthorizedError extends DomainError {
+  constructor(message) {
+    super(`Unauthorized Error: ${message}`);
+  }
+}

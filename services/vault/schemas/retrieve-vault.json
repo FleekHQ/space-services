@@ -1,0 +1,16 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Retrieve Vault",
+  "required": [
+    "vsk"
+  ],
+  "properties": {
+    "vsk": {
+      "type": "string",
+      "title": "Vault Service Key",
+      "description": "Client-side key derivation of the key that encrypted the vault file"
+    }
+  }
+}

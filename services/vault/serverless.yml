@@ -1,0 +1,66 @@
+service:
+  name: ${self:provider.appName}-vault
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-west-2
+  stage: ${opt:stage}
+  appName: space
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+      Resource:
+        - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
+        - Fn::Join:
+          - ""
+          - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
+            - "/*"
+
+plugins:
+  - serverless-jetpack
+
+custom:
+  jetpack:
+    base: "../../"
+
+package:
+  exclude:
+    - "**/node_modules/aws-sdk/**" # included on Lambda.
+
+functions:
+  storeVault:
+    handler: dist/index.storeVault
+    environment:
+      ENV: ${self:provider.stage}
+      SALT_SECRET: ${ssm:vault-salt-secret-${self:provider.stage}~true}
+    events:
+      - http:
+          method: post
+          path: /vaults
+          cors: true
+          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
+          request:
+            schema:
+              application/json: ${file(schemas/store-vault.json)}
+
+  retrieveVault:
+    handler: dist/index.retrieveVault
+    environment:
+      ENV: ${self:provider.stage}
+      SALT_SECRET: ${ssm:vault-salt-secret-${self:provider.stage}~true}
+    events:
+      - http:
+          method: post
+          path: /vaults/{uuid}
+          cors: true
+          request:
+            schema:
+              application/json: ${file(schemas/retrieve-vault.json)}
+            parameters:
+              paths:
+                uuid: true

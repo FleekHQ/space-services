@@ -1,0 +1,24 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "Store Vault",
+  "required": [
+    "vault",
+    "vsk"
+  ],
+  "properties": {
+    "vault": {
+      "type": "string",
+      "title": "Vault File",
+      "description": "The encrypted vault file content",
+      "pattern": "^(?!\\s*$).+"
+    },
+    "vsk": {
+      "type": "string",
+      "title": "Vault Service Key",
+      "description": "Client-side key derivation of the key that encrypted the vault file",
+      "pattern": "^(?!\\s*$).+"
+    }
+  }
+}
