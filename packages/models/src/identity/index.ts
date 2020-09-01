@@ -93,6 +93,19 @@ export class IdentityModel extends BaseModel {
     return parseDbObjectToIdentity(rawIdentity);
   }
 
+  public async deleteIdentityByUuid(uuid: string): Promise<void> {
+    const identity = await this.getIdentityByUuid(uuid);
+
+    // delete username record, catch error if there is no username reserved
+    await this.delete(getUsernamePrimaryKey(identity.username)).catch(
+      () => null
+    );
+    // delete address record
+    await this.delete(getAddressPrimaryKey(identity.address));
+    // delete identity
+    await this.delete(getIdentityPrimaryKey(identity.uuid));
+  }
+
   public async getIdentityByAddress(address: string): Promise<IdentityRecord> {
     const rawAddress = await this.get(getAddressPrimaryKey(address)).then(
       result => result.Item as RawAddressRecord
