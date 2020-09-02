@@ -1,3 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`deriveAddressFromPubKey converts a public key correctly 1`] = `"0xd606f05a2a980f58737aa913553c8d6eac8b"`;
+exports[`deriveAddressFromPubKey converts a public key correctly 1`] = `"0xdc2c70acc64d9fce4988d94123c43302788c"`;
