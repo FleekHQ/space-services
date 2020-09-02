@@ -66,6 +66,21 @@ functions:
           request:
             schema:
               application/json: ${file(schemas/updateIdentity.json)}
+  deleteIdentity:
+    memorySize: 128
+    handler: dist/deleteIdentity.handler
+    environment:
+      REGION: ${self:provider.region}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          path: /identity
+          method: DELETE
+          authorizer:
+            name: authorizer
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
   createProof:
     memorySize: 128
     handler: dist/createProof.handler
