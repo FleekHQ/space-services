@@ -3,7 +3,7 @@ import { SHA3 } from 'sha3';
 
 /**
  * Obtains an address given a public key
- * @param pubKey The public key
+ * @param pubKey The public key (in hex encoding)
  */
 export const deriveAddressFromPubKey = (pubKey: string): string => {
   const hash = new SHA3(256);
