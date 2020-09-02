@@ -17,12 +17,12 @@ export const handler = async function(
   const { uuid } = event.requestContext.authorizer;
 
   try {
-    const data = await identityDb.deleteIdentityByUuid(uuid);
+    await identityDb.deleteIdentityByUuid(uuid);
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        data,
+        message: 'ok',
       }),
     };
   } catch (e) {
