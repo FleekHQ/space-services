@@ -16,8 +16,6 @@ export const handler = async function(
 ): Promise<APIGatewayProxyResult> {
   const { address, username } = event.queryStringParameters;
 
-  console.log(event.queryStringParameters);
-
   if (!address && !username) {
     return {
       statusCode: 403,
@@ -30,6 +28,15 @@ export const handler = async function(
 
   const filterKey = address ? 'address' : 'username';
   const values = event.queryStringParameters[filterKey].split(',');
+
+  if (values.length > 20) {
+    return {
+      statusCode: 403,
+      body: JSON.stringify({
+        error: 'You can filter by max. 20 addresses or usernames.',
+      }),
+    };
+  }
 
   let data = await Promise.all(
     values.map(val => queryBy[filterKey](val).catch(() => null))
