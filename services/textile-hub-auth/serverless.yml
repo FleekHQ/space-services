@@ -37,11 +37,13 @@ custom:
   jetpack:
     base: "../../"
   customDomain:
-    domainName: ${self:provider.domain.${self:provider.stage}}
-    certificateArn: "arn:aws:acm:us-west-2:768127979193:certificate/c2b439fa-3826-4c8c-8033-b539f486e75b"
-    basePath: ''
-    stage: ${self:provider.stage}
-    createRoute53Record: false
+    websocket:
+      domainName: ${self:provider.domain.${self:provider.stage}}
+      certificateArn: ${ssm:space-api-certificate-arn}
+      basePath: ''
+      stage: ${self:provider.stage}
+      createRoute53Record: false
+      endpointType: 'regional'
 
 package:
   exclude:

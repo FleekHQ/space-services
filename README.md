@@ -35,6 +35,8 @@ We use AWS's Parameter Store to store secret values that will get injected as en
 - `space-ipfs-host-${env}` - Public or Private address of IPFS node (used for uploading avatar image)
 - `space-ipfs-sg` - AWS Security Group which is allowed to access IPFS node
 - `space-ipfs-subnet` - AWS Private Subnet ID where IPFS node is deployed
+- `space-api-edge-certificate-arn` - Edge Certificate ARN (used to configure custom domains for Edge API Gateways)
+- `space-api-certificate-arn` - Regional Certificate ARN (used to configure custom domains for WebSocket API Gateways)
 - `org-arn` (This is only the ID provided by AWS to find resources by their ARN. Generally a 12-digit integer)
 - `vault-salt-secret-${env}` (Random string used for vault salt)
 
@@ -45,6 +47,16 @@ Where `env` is the current deployed environment, e.g. prd or stg.
 
 If the resources have not been created yet, run the following command in each of the resource folders: `sls --stage [CURR_STAGE] deploy`.
 
+### Attaching custom domains
+
+You can configure custom domains in `serverless.yaml` (each service has own domain). These domains needs to be deployed by: `sls create_domain --stage [CURR_STAGE]`, before `sls deploy --stage [CURR_STAGE]`. You can also disable custom domains by disabling `serverless-domain-manager` plugin:
+
+```
+plugins:
+  - serverless-jetpack
+#  - serverless-domain-manager
+```
+
 ### Deploy the services
 
 1- Install dependencies
@@ -54,4 +66,3 @@ If the resources have not been created yet, run the following command in each of
 3- Go to the folder of the service you want to deploy and build it using `yarn build`.
 
 4- Deploy the service using `sls --stage [CURR_STAGE] deploy`.
-
