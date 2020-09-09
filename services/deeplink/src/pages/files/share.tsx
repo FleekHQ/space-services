@@ -61,8 +61,10 @@ const ShareView: React.FC = () => {
   const { fname, hash } = queryParams;
   const deeplink = `space://files/share?fname=${fname}&hash=${hash}`;
   const [openModal, setOpenModal] = useState(false);
+  const [errorText, setErrorText] = useState('');
   const [saveWriter, setSaveWriter] = useState();
   const [downloadInProgress, setDownloadInProgress] = useState(false);
+  const [loadingText, setLoadingText] = useState('');
 
   const closeModal = useCallback(() => setOpenModal(false), [setOpenModal]);
 
@@ -78,8 +80,10 @@ const ShareView: React.FC = () => {
       if (downloadInProgress) {
         return;
       }
-      setOpenModal(false);
+      // set all initial properties
+      setErrorText('');
       setDownloadInProgress(true);
+      setLoadingText('Downloading and verifying file');
 
       downloadEncryptedFile(hash, password)
         .then(result => {
@@ -99,11 +103,11 @@ const ShareView: React.FC = () => {
           });
         })
         .catch(err => {
-          // TODO: Show nice error message
-          alert(`${err.message}`);
+          setErrorText(err.message);
         })
         .finally(() => {
           setDownloadInProgress(false);
+          setLoadingText('');
         });
     },
     [fname, hash, setSaveWriter, saveWriter]
@@ -128,10 +132,14 @@ const ShareView: React.FC = () => {
         onOuterClick={closeModal}
         onOpen={onFormCompleted}
         onClose={closeModal}
+        loading={downloadInProgress}
+        loadingText={loadingText}
+        errorText={errorText}
       />
       <Container>
         <Section>
           <LeftSection
+            filename={fname}
             onDownloadFile={onDownloadFile}
             onOpenFileInSpace={onOpenFileInSpace}
           />

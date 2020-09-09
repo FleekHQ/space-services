@@ -12,6 +12,9 @@ import {
   Button,
   Container,
   ButtonContainer,
+  Spinner,
+  SpinnerContainer,
+  ErrorText,
 } from './styles';
 
 export interface PasswordModalProps {
@@ -20,11 +23,23 @@ export interface PasswordModalProps {
   onCancel: () => void;
   onOuterClick: () => void;
   onClose: () => void;
+  loading: boolean;
+  loadingText: string;
+  errorText?: string;
 }
 
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 const PasswordModal: React.FC<PasswordModalProps> = props => {
-  const { open, onOpen, onCancel, onClose, onOuterClick } = props;
+  const {
+    open,
+    onOpen,
+    onCancel,
+    onClose,
+    onOuterClick,
+    loading,
+    loadingText,
+    errorText,
+  } = props;
 
   const [password, setPassword] = useState('');
 
@@ -43,14 +58,22 @@ const PasswordModal: React.FC<PasswordModalProps> = props => {
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
-        <ButtonContainer>
-          <Button css={css.whitebutton} onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button css={css.blackbutton} onClick={() => onOpen(password)}>
-            Open
-          </Button>
-        </ButtonContainer>
+        {<ErrorText>{errorText}</ErrorText>}
+        {!loading && (
+          <ButtonContainer>
+            <Button css={css.whitebutton} onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button css={css.blackbutton} onClick={() => onOpen(password)}>
+              Open
+            </Button>
+          </ButtonContainer>
+        )}
+        {loading && (
+          <SpinnerContainer>
+            <Spinner /> {loadingText}
+          </SpinnerContainer>
+        )}
       </Card>
     </Container>
   );
@@ -62,6 +85,9 @@ PasswordModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onOuterClick: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  loadingText: PropTypes.string.isRequired,
+  errorText: PropTypes.string,
 };
 
 export default PasswordModal;

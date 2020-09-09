@@ -87,7 +87,7 @@ export const downloadEncryptedFile = async (
     });
   } catch (err) {
     throw new Error(
-      'Downloading file failed. Confirm you have a correct share link.'
+      'Downloading file failed. Confirm you have a correct share link and try again later.'
     );
   }
 
@@ -116,7 +116,7 @@ export const downloadEncryptedFile = async (
     new Uint8Array(res.data)
   );
   if (computedDigest.toHex() !== digestInFile.toHex()) {
-    throw new Error('Incorrect password provided');
+    throw new Error('Incorrect password provided.');
   }
 
   return {
