@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import forge, { hmac } from 'node-forge';
+import forge, { hmac, util } from 'node-forge';
 import axios from 'axios';
 import { WriteStream } from 'fs';
 import scrypt from 'scrypt-js';
@@ -21,7 +21,6 @@ export const writeDecodedData = async (
   data: Uint8Array,
   writer: WriteStream
 ): Promise<void> => {
-  const writeEncoder = new TextEncoder();
   const decipher = forge.cipher.createDecipher(
     'AES-CTR',
     forge.util.createBuffer(decryptionKey)
@@ -30,7 +29,7 @@ export const writeDecodedData = async (
 
   decipher.update(forge.util.createBuffer(data));
 
-  writer.write(writeEncoder.encode(decipher.output.getBytes()));
+  writer.write(forge.util.binary.raw.decode(decipher.output.getBytes()));
 
   const decipherSuccess = decipher.finish();
   if (!decipherSuccess) {
@@ -56,14 +55,14 @@ export const downloadEncryptedFile = async (
     });
   } catch (err) {
     throw new Error(
-      'Downloading file failed. Convert you have a correct share link.'
+      'Downloading file failed. Confirm you have a correct share link.'
     );
   }
 
   const resultReader = new CursorBuffer(new Uint8Array(res.data));
   resultReader.skipXBytes(4); // <-- skip 4 bytes (usually blank)
 
-  // skip int32 (4 bytes) for -> iterations
+  // read int32 (4 bytes) for -> iterations
   const iterations = resultReader.read32();
   // read SaltLength bytes from res.data -> salt
   const saltBytes = resultReader.readXBytes(SaltLength);
@@ -78,7 +77,6 @@ export const downloadEncryptedFile = async (
     1,
     ScryptKeyLength
   );
-
   const decryptionKey = scryptKeys.slice(0, AesKeyLength);
 
   // compute hmac
@@ -105,6 +103,8 @@ export const downloadEncryptedFile = async (
   return {
     key: decryptionKey,
     iv: ivBytes,
-    encryptedData: resultReader.readXBytes(resultReader.bytesLeft - HmacLength),
+    encryptedData: resultReader.readXBytes(
+      resultReader.bytesLeft - (HmacLength - 1)
+    ),
   };
 };
