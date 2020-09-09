@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import forge, { hmac, util } from 'node-forge';
+import forge from 'node-forge';
 import axios from 'axios';
 import { WriteStream } from 'fs';
 import scrypt from 'scrypt-js';
@@ -35,6 +35,38 @@ export const writeDecodedData = async (
   if (!decipherSuccess) {
     console.error('Error decrypting', decipherSuccess);
   }
+};
+
+const computeDataHMAC = (
+  scryptKeys: Uint8Array,
+  data: Uint8Array
+): {
+  computedDigest: forge.util.ByteStringBuffer;
+  digestInFile: forge.util.ByteStringBuffer;
+} => {
+  const hmacKey = scryptKeys.slice(AesKeyLength, AesKeyLength + HmacKeyLength);
+
+  const hmacReader = new CursorBuffer(data);
+  hmacReader.skipXBytes(4); // <--- usually empty
+
+  const hmac = forge.hmac.create();
+  hmac.start(
+    'sha512' as forge.hmac.Algorithm,
+    forge.util.createBuffer(hmacKey)
+  );
+  hmac.update(
+    forge.util
+      .createBuffer(
+        hmacReader.readXBytes(hmacReader.bytesLeft - HmacLength + 1)
+      )
+      .getBytes()
+  );
+
+  const hmacBytes = hmacReader.readXBytes(HmacLength);
+  return {
+    computedDigest: hmac.digest(),
+    digestInFile: forge.util.createBuffer(hmacBytes),
+  };
 };
 
 interface EncryptedFileInfo {
@@ -79,32 +111,19 @@ export const downloadEncryptedFile = async (
   );
   const decryptionKey = scryptKeys.slice(0, AesKeyLength);
 
-  // compute hmac
-  // TODO: Commented out because of a bug in hmac.update failing
-  // const hmacKey = scryptKeys.slice(AesKeyLength, HmacKeyLength);
-  // const hmacReader = new CursorBuffer(new Uint8Array(res.data));
-  // hmacReader.skipXBytes(4);
-  // const hmac = forge.hmac.create();
-  // hmac.start('sha512', forge.util.createBuffer(hmacKey));
-  // hmac.update(
-  //   forge.util.createBuffer(
-  //     hmacReader.readXBytes(hmacReader.bytesLeft - HmacLength),
-  //     'utf8'
-  //   )
-  // );
-  // const hmacBytes = hmacReader.readXBytes(HmacLength);
-  // hmac.update(forge.util.createBuffer(hmacBytes));
-  // console.log('Computed Hash', hmac.digest().toHex());
-  // console.log('Hash in file', forge.util.createBuffer(hmacBytes).toHex());
-  // if (hmac.digest().toHex() !== forge.util.createBuffer(hmacBytes).toHex()) {
-  //   throw new Error('Incorrect password provided');
-  // }
+  const { computedDigest, digestInFile } = computeDataHMAC(
+    scryptKeys,
+    new Uint8Array(res.data)
+  );
+  if (computedDigest.toHex() !== digestInFile.toHex()) {
+    throw new Error('Incorrect password provided');
+  }
 
   return {
     key: decryptionKey,
     iv: ivBytes,
     encryptedData: resultReader.readXBytes(
-      resultReader.bytesLeft - (HmacLength - 1)
+      resultReader.bytesLeft - HmacLength + 1
     ),
   };
 };
