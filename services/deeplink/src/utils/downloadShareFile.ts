@@ -75,6 +75,12 @@ interface EncryptedFileInfo {
   encryptedData: Uint8Array;
 }
 
+const getHashDownloadUrl = (hash: string): string => {
+  const baseUrl =
+    process.env.GATSBY_IPFS_GATEWAY_BASE_URL || 'https://hub-dev.space.storage';
+  return `${baseUrl}/ipfs/${hash}`;
+};
+
 // Fetch hash from ipfs and parses decryption information
 export const downloadEncryptedFile = async (
   hash: string,
@@ -82,8 +88,9 @@ export const downloadEncryptedFile = async (
 ): Promise<EncryptedFileInfo | null> => {
   let res;
   try {
-    res = await axios.get<ArrayBuffer>(`https://ipfs.fleek.co/ipfs/${hash}`, {
+    res = await axios.get<ArrayBuffer>(getHashDownloadUrl(hash), {
       responseType: 'arraybuffer',
+      maxRedirects: 0,
     });
   } catch (err) {
     throw new Error(
