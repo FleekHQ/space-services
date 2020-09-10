@@ -8,7 +8,7 @@ export const Title = styled.p`
   text-align: center;
   font-weight: 500;
   padding: 26px 0;
-  line-height: 1.14;
+  line-height: 1.5;
 `;
 
 export const Card = styled.div`

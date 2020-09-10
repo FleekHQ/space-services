@@ -16,21 +16,37 @@ import {
   LineContainer,
   RecommendedIcon,
 } from './styles';
+import { FileIconType, MapExtensionToFileIconType } from '../FileIcon/types';
 
 export interface LeftSectionProps {
   onOpenFileInSpace: () => void;
   onDownloadFile: () => void;
+  filename: string;
 }
 
+// gets the file icon type from extension of file name
+const getFileIconType = (filename: string): FileIconType => {
+  if (!filename) {
+    return 'unknown';
+  }
+
+  const parts = filename.split('.');
+  if (parts.length <= 1) {
+    return 'unknown';
+  }
+
+  return MapExtensionToFileIconType[parts[parts.length - 1]] || 'unknown';
+};
+
 const LeftSection: React.FC<LeftSectionProps> = props => {
-  const { onDownloadFile, onOpenFileInSpace } = props;
+  const { onDownloadFile, onOpenFileInSpace, filename } = props;
 
   return (
     <Container>
-      <FileIcon icon="pdf" css={css.icon} />
+      <FileIcon icon={getFileIconType(filename)} css={css.icon} />
       <Title>
         <strong>Private Sender</strong> is sharing a{' '}
-        <strong>Private File</strong> with you.
+        <strong>{`${filename} File` || 'Private File'}</strong> with you.
       </Title>
       <Card css={css.cardsizing}>
         <CardTitle css={css.greentext}>
@@ -60,6 +76,7 @@ const LeftSection: React.FC<LeftSectionProps> = props => {
 LeftSection.propTypes = {
   onDownloadFile: PropTypes.func.isRequired,
   onOpenFileInSpace: PropTypes.func.isRequired,
+  filename: PropTypes.string.isRequired,
 };
 
 export default LeftSection;

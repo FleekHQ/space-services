@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
-import { css as ecss } from '@emotion/core';
+import { css as ecss, keyframes } from '@emotion/core';
+import { colors } from '../../styles/variables';
 
 export const Container = styled.div`
   position: fixed;
@@ -36,7 +37,7 @@ export const Input = styled.input`
   border-radius: 3px;
   border: solid 1px #c4c4c4;
   padding: 0 13px;
-  margin: 18px 0 20px;
+  margin: 18px 0 15px;
   &::placeholder {
     color: #666;
   }
@@ -60,6 +61,41 @@ export const Button = styled.button`
 export const ButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
+`;
+
+const spinnerFrames = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
+export const Spinner = styled.div`
+  margin: 5px 5px 5px;
+  border-top: 3px solid ${colors.brand};
+  border-right: 3px solid rgba(136, 136, 136, 0.2);
+  border-bottom: 3px solid rgba(136, 136, 136, 0.2);
+  border-left: 3px solid rgba(136, 136, 136, 0.2);
+  animation: ${spinnerFrames} 0.9s linear infinite;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+`;
+
+export const SpinnerContainer = styled.div`
+  display: flex;
+  font-size: 14px;
+  align-items: center;
+`;
+
+export const ErrorText = styled.div`
+  font-size: 12px;
+  color: ${colors.warning};
+  margin-bottom: 15px;
+  line-height: 15px;
 `;
 
 const icon = ecss`

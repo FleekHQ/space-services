@@ -8,22 +8,25 @@ import AudioIcon from '../../svgs/Audio.svg';
 import TextIcon from '../../svgs/TextDoc.svg';
 import UnknownIcon from '../../svgs/Unknown.svg';
 import PresentationIcon from '../../svgs/Presentation.svg';
+import { FileIconType } from './types';
 
 export interface FileIconProps {
-  icon: 'audio' | 'pdf' | 'ptx' | 'text' | 'video' | 'zip' | 'unknown';
+  icon: FileIconType;
 }
 
-const getFileIcon = (icon: FileIconProps['icon']): React.FC => {
-  const icons = {
-    pdf: PdfIcon as React.FC,
-    zip: ZipIcon as React.FC,
-    text: TextIcon as React.FC,
-    video: VideIcon as React.FC,
-    audio: AudioIcon as React.FC,
-    unknown: UnknownIcon as React.FC,
-    ptx: PresentationIcon as React.FC,
-  };
+const icons: Record<FileIconType, React.FC> = {
+  pdf: PdfIcon as React.FC,
+  zip: ZipIcon as React.FC,
+  text: TextIcon as React.FC,
+  word: TextIcon as React.FC,
+  video: VideIcon as React.FC,
+  audio: AudioIcon as React.FC,
+  image: VideIcon as React.FC,
+  unknown: UnknownIcon as React.FC,
+  ptx: PresentationIcon as React.FC,
+};
 
+const getFileIcon = (icon: FileIconType): React.FC => {
   return icons[icon] || icons.unknown;
 };
 
@@ -42,6 +45,7 @@ FileIcon.propTypes = {
     'ptx',
     'text',
     'video',
+    'image',
     'zip',
     'unknown',
   ]),
