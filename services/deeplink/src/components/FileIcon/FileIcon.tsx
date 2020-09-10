@@ -45,6 +45,7 @@ FileIcon.propTypes = {
     'ptx',
     'text',
     'video',
+    'image',
     'zip',
     'unknown',
   ]),
