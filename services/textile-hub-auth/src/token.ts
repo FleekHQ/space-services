@@ -81,10 +81,6 @@ export const handler = async function(
     throw new Error('Missing pubkey param');
   }
 
-  if (!pubkey.match(/[0-9A-Fa-f]{64}/g)) {
-    throw new Error('Pubkey needs to be in hex format');
-  }
-
   const client = await createTextileClient();
 
   // Multibase (lib used by textile identities) prepends the public key with a "code"
