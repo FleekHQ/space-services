@@ -30,6 +30,7 @@ This will be configured in CI soon.
 
 We use AWS's Parameter Store to store secret values that will get injected as env vars into services. The secrets needed are:
 
+- `txl-hub-url-${env}` - Textile Hub endpoint (default https://api.textile.io:443)
 - `txl-user-key-${env}` - Textile Hub user key
 - `txl-user-secret-${env}` - Textile Hub user secret
 - `space-ipfs-host-${env}` - Public or Private address of IPFS node (used for uploading avatar image)

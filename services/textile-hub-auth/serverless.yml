@@ -64,6 +64,7 @@ functions:
       - websocket: token
     environment:
       JWT_SECRET: ${ssm:txl-hub-jwt-secret-${self:provider.stage}~true}
+      API: ${ssm:txl-hub-url-${self:provider.stage}~true}
       TXL_USER_KEY: ${ssm:txl-user-key-${self:provider.stage}~true}
       TXL_USER_SECRET: ${ssm:txl-user-secret-${self:provider.stage}~true}
       ENV: ${self:provider.stage}
