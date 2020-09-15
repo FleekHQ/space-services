@@ -78,8 +78,11 @@ export const handler = async function(
   } = JSON.parse(body) as TokenRequestPayload;
 
   if (!pubkey) {
-    console.log('missing pubkey param');
     throw new Error('Missing pubkey param');
+  }
+
+  if (!pubkey.match(/[0-9A-Fa-f]{64}/g)) {
+    throw new Error('Pubkey needs to be in hex format');
   }
 
   const client = await createTextileClient();
