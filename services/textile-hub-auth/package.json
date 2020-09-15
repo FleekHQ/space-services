@@ -37,6 +37,7 @@
     "@types/jsonwebtoken": "^8.5.0",
     "@types/multibase": "^0.6.0",
     "@types/node": "^12.12.21",
+    "serverless-domain-manager": "^4.2.0",
     "typescript": "^3.7.3"
   },
   "private": true

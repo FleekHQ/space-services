@@ -29,6 +29,7 @@
     "@packages/devtools": "^0.0.1",
     "@types/aws-lambda": "^8.10.56",
     "@types/node": "^12.12.21",
+    "serverless-domain-manager": "^4.2.0",
     "typescript": "^3.7.3"
   },
   "private": true

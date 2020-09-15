@@ -21,14 +21,24 @@ provider:
           - ""
           - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
             - "/*"
+  domain:
+    dev: api-dev.space.storage
+    stg: api-stg.space.storage
+    prd: api.space.storage
 
 plugins:
   - serverless-jetpack
+  - serverless-domain-manager
 
 custom:
   jetpack:
     base: "../../"
-
+  customDomain:
+    domainName: ${self:provider.domain.${self:provider.stage}}
+    certificateArn: ${ssm:space-api-edge-certificate-arn}
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: false
 package:
   exclude:
     - "**/node_modules/aws-sdk/**" # included on Lambda.
