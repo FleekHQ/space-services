@@ -15,7 +15,6 @@ const base58Keygen = (length = 16): string => {
     const currChar = alphabet[currIndex];
     result += currChar;
   }
-  console.log(result);
 
   return result;
 };
