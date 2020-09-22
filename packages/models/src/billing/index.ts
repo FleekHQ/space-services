@@ -105,6 +105,44 @@ export class BillingModel extends BaseModel {
     await this.put(dbItem);
     return updatedWallet;
   }
+
+  /**
+   * Adds (or subtracts) credits from wallet balance
+   *
+   * @param key
+   * @param credits
+   */
+  public async addCredits(key: string, credits: number): Promise<Wallet> {
+    // check if wallet exists
+    const wallet = await this.getWalletByKey(key);
+
+    const Key = getWalletPrimaryKey(wallet.keyHash);
+
+    const ExpressionAttributeValues = {
+      ':credits': credits,
+      ':zero': 0,
+    };
+
+    const ExpressionAttributeNames = {
+      '#credits': 'credits',
+    };
+
+    const UpdateExpression = `SET #credits = if_not_exists(#credits, :zero) + :credits`;
+
+    const params = {
+      TableName: this.table,
+      Select: 'ALL_PROJECTED_ATTRIBUTES',
+      Key,
+      ExpressionAttributeValues,
+      ExpressionAttributeNames,
+      UpdateExpression,
+      ReturnValues: 'ALL_NEW',
+    };
+
+    const res = await this.update(params);
+
+    return parseDbObjectToWallet(res.Attributes as RawWallet);
+  }
 }
 
 export default BillingModel;
