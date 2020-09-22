@@ -34,7 +34,10 @@ const parseDbObjectToVault = (raw: RawVault): Vault => {
 };
 
 export class VaultModel extends BaseModel {
-  constructor(env: string, client: DocumentClient = new DocumentClient()) {
+  constructor(
+    env: string,
+    client: DocumentClient = new DocumentClient({ region: 'us-west-2' })
+  ) {
     const table = `space_table_${env}`;
     super(table, client);
   }

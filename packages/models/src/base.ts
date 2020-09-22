@@ -6,7 +6,12 @@ export class BaseModel {
 
   table: string;
 
-  constructor(table: string, client: DocumentClient = new DocumentClient()) {
+  constructor(
+    table: string,
+    client: DocumentClient = new DocumentClient({
+      region: 'us-west-2',
+    })
+  ) {
     this.table = table;
     this.client = client;
   }

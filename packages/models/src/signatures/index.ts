@@ -17,7 +17,10 @@ const parseDbObjectToSignature = (raw: RawSignature): Signature => ({
 });
 
 export class SignatureModel extends BaseModel {
-  constructor(env: string, client: DocumentClient = new DocumentClient()) {
+  constructor(
+    env: string,
+    client: DocumentClient = new DocumentClient({ region: 'us-west-2' })
+  ) {
     const table = `space_table_${env}`;
     super(table, client);
   }
