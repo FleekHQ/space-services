@@ -4,7 +4,7 @@ service:
 provider:
   name: aws
   runtime: nodejs12.x
-  region: ap-south-1
+  region: us-west-2
   stage: ${opt:stage}
   appName: space
   iamRoleStatements:
@@ -15,16 +15,29 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
       Resource:
-        - arn:aws:dynamodb:us-west-2:768127979193:table/space_table_dev
-        - arn:aws:dynamodb:us-west-2:768127979193:table/space_table_dev/*
+        - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
+        - Fn::Join:
+          - ""
+          - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
+            - "/*"
+  domain:
+    dev: vault-dev.space.storage
+    stg: vault-stg.space.storage
+    prd: vault.space.storage
 
 plugins:
   - serverless-jetpack
-  # - serverless-domain-manager
+  - serverless-domain-manager
 
 custom:
   jetpack:
     base: "../../"
+  customDomain:
+    domainName: ${self:provider.domain.${self:provider.stage}}
+    certificateArn: ${ssm:space-api-edge-certificate-arn}
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: false
 
 package:
   exclude:

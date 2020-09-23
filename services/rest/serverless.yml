@@ -4,7 +4,7 @@ service:
 provider:
   name: aws
   runtime: nodejs12.x
-  region: ap-south-1
+  region: us-west-2
   stage: ${opt:stage}
   appName: space
   iamRoleStatements:
@@ -16,17 +16,29 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - arn:aws:dynamodb:us-west-2:768127979193:table/space_table_dev
-        - arn:aws:dynamodb:us-west-2:768127979193:table/space_table_dev/*
+        - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
+        - Fn::Join:
+          - ""
+          - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
+            - "/*"
+  domain:
+    dev: api-dev.space.storage
+    stg: api-stg.space.storage
+    prd: api.space.storage
 
 plugins:
   - serverless-jetpack
-  # - serverless-domain-manager
+  - serverless-domain-manager
 
 custom:
   jetpack:
     base: "../../"
-
+  customDomain:
+    domainName: ${self:provider.domain.${self:provider.stage}}
+    certificateArn: ${ssm:space-api-edge-certificate-arn}
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: false
 package:
   exclude:
     - "**/node_modules/aws-sdk/**" # included on Lambda.
@@ -97,25 +109,25 @@ functions:
           request:
             schema:
               application/json: ${file(schemas/createProof.json)}
-  # uploadAvatar:
-  #   memorySize: 128
-  #   handler: dist/uploadAvatar.handler
-  #   environment:
-  #     REGION: ${self:provider.region}
-  #     IPFS_HOST: ${ssm:space-ipfs-host-${self:provider.stage}~true}
-  #     ENV: ${opt:stage}
-  #   events:
-  #     - http:
-  #         path: /identity/avatar
-  #         method: POST
-  #         authorizer:
-  #           name: authorizer
-  #           identitySource: method.request.header.Authorization
-  #           type: token
-  #           resultTtlInSeconds: 0
-  #   # VPC configuration is needed if your IPFS node sits inside private subnet
-  #   vpc:
-  #     securityGroupIds:
-  #       - ${ssm:space-ipfs-sg}
-  #     subnetIds:
-  #       - ${ssm:space-ipfs-subnet}
+  uploadAvatar:
+    memorySize: 128
+    handler: dist/uploadAvatar.handler
+    environment:
+      REGION: ${self:provider.region}
+      IPFS_HOST: ${ssm:space-ipfs-host-${self:provider.stage}~true}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          path: /identity/avatar
+          method: POST
+          authorizer:
+            name: authorizer
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
+    # VPC configuration is needed if your IPFS node sits inside private subnet
+    vpc:
+      securityGroupIds:
+        - ${ssm:space-ipfs-sg}
+      subnetIds:
+        - ${ssm:space-ipfs-subnet}
