@@ -21,3 +21,25 @@ export interface RawWallet extends AppTableItem {
   // Date of creation in ISO format
   createdAt: string;
 }
+
+export interface StripeInfo {
+  // The uuid of the owner
+  ownerUuid: string;
+
+  // Stripe customer e-mail address
+  email: string;
+
+  // Stripe customer id
+  stripeCustomerId: string;
+
+  // Date of creation in ISO format
+  createdAt: string;
+}
+
+export interface RawStripeInfo extends AppTableItem {
+  // Stripe customer id
+  stripeCustomerId: string;
+
+  // Date of creation in ISO format
+  createdAt: string;
+}

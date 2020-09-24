@@ -58,6 +58,17 @@ functions:
               paths:
                 key: true
 
+  createStripeCustomer:
+    handler: dist/create-stripe-customer.handler
+    environment:
+      ENV: ${self:provider.stage}
+    events:
+      - http:
+          method: post
+          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
+          path: /stripe-customer
+          cors: true
+
   paymentStatusWebhook:
     handler: dist/index.paymentStatusWebhook
     environment:
@@ -66,4 +77,14 @@ functions:
       - http:
           method: post
           path: /payments
+          cors: true
+
+  stripeWebhook:
+    handler: dist/webhooks/stripe.handler
+    environment:
+      ENV: ${self:provider.stage}
+    events:
+      - http:
+          method: post
+          path: /webhooks/stripe
           cors: true

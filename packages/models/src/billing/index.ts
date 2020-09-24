@@ -1,5 +1,5 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Wallet, RawWallet } from './types';
+import { Wallet, RawWallet, StripeInfo, RawStripeInfo } from './types';
 import base58Keygen from './base58-keygen';
 import deriveKey from './key-processor';
 import { BaseModel } from '../base';
@@ -9,10 +9,16 @@ import { NotFoundError, ValidationError } from '../errors';
 
 const WALLET_KEY = 'wallet';
 const UNOWNED_WALLET_UUID = '0';
+const STRIPE_INFO_KEY = 'stripe';
 
 export const getWalletPrimaryKey = (keyHash: string): PrimaryKey => ({
   pk: keyHash,
   sk: WALLET_KEY,
+});
+
+export const getStripeInfoPrimaryKey = (email: string): PrimaryKey => ({
+  pk: email,
+  sk: STRIPE_INFO_KEY,
 });
 
 const mapWalletToDbObject = (wallet: Wallet): RawWallet => {
@@ -37,8 +43,35 @@ const parseDbObjectToWallet = (raw: RawWallet): Wallet => {
   return wallet;
 };
 
+const mapStripeInfoToDbObject = (info: StripeInfo): RawStripeInfo => {
+  const { email, ownerUuid, ...rest } = info;
+
+  return {
+    ...getStripeInfoPrimaryKey(email),
+    gs1pk: ownerUuid,
+    gs1sk: STRIPE_INFO_KEY,
+    ...rest,
+  };
+};
+
+const parseDbObjectToStripeInfo = (raw: RawStripeInfo): StripeInfo => {
+  const info = {
+    email: raw.pk,
+    ownerUuid: raw.gs1pk,
+    stripeCustomerId: raw.stripeCustomerId,
+    createdAt: raw.createdAt,
+  };
+
+  return info;
+};
+
 export class BillingModel extends BaseModel {
-  constructor(env: string, client: DocumentClient = new DocumentClient()) {
+  constructor(
+    env: string,
+    client: DocumentClient = new DocumentClient({
+      region: 'us-west-2',
+    })
+  ) {
     const table = `space_table_${env}`;
     super(table, client);
   }
@@ -142,6 +175,44 @@ export class BillingModel extends BaseModel {
     const res = await this.update(params);
 
     return parseDbObjectToWallet(res.Attributes as RawWallet);
+  }
+
+  /**
+   * Store email, stripeCustomerId and uuid
+   */
+  public async saveStripeInfo(
+    email: string,
+    stripeCustomerId: string,
+    ownerUuid: string
+  ): Promise<StripeInfo> {
+    const createdAt = new Date(Date.now()).toISOString();
+
+    const info = {
+      createdAt,
+      email,
+      ownerUuid,
+      stripeCustomerId,
+    };
+
+    const dbItem = mapStripeInfoToDbObject(info);
+
+    await this.put(dbItem);
+
+    return info;
+  }
+
+  public async getStripeInfoByEmail(email: string): Promise<StripeInfo> {
+    const pkey = getStripeInfoPrimaryKey(email);
+
+    const rawInfo = await this.get(pkey).then(
+      result => result.Item as RawStripeInfo
+    );
+
+    if (!rawInfo) {
+      throw new NotFoundError(`Stripe info for e-mail "${email}" not found.`);
+    }
+
+    return parseDbObjectToStripeInfo(rawInfo);
   }
 }
 
