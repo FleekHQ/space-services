@@ -62,6 +62,7 @@ functions:
     handler: dist/create-stripe-customer.handler
     environment:
       ENV: ${self:provider.stage}
+      STRIPE_WEBHOOK_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
     events:
       - http:
           method: post
@@ -83,6 +84,7 @@ functions:
     handler: dist/webhooks/stripe.handler
     environment:
       ENV: ${self:provider.stage}
+      STRIPE_WEBHOOK_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
     events:
       - http:
           method: post
