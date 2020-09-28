@@ -1,5 +1,12 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Wallet, RawWallet, StripeInfo, RawStripeInfo } from './types';
+import {
+  Wallet,
+  RawWallet,
+  StripeInfo,
+  RawStripeInfo,
+  StripeSubscription,
+  RawStripeSubscription,
+} from './types';
 import base58Keygen from './base58-keygen';
 import deriveKey from './key-processor';
 import { BaseModel } from '../base';
@@ -10,6 +17,7 @@ import { NotFoundError, ValidationError } from '../errors';
 const WALLET_KEY = 'wallet';
 const UNOWNED_WALLET_UUID = '0';
 const STRIPE_INFO_KEY = 'stripe';
+const STRIPE_SUBSCRIPTION_KEY = 'stripe-subscription';
 
 export const getWalletPrimaryKey = (keyHash: string): PrimaryKey => ({
   pk: keyHash,
@@ -19,6 +27,13 @@ export const getWalletPrimaryKey = (keyHash: string): PrimaryKey => ({
 export const getStripeInfoPrimaryKey = (email: string): PrimaryKey => ({
   pk: email,
   sk: STRIPE_INFO_KEY,
+});
+
+export const getStripeSubscriptionPrimaryKey = (
+  subscriptionId: string
+): PrimaryKey => ({
+  pk: subscriptionId,
+  sk: STRIPE_SUBSCRIPTION_KEY,
 });
 
 const mapWalletToDbObject = (wallet: Wallet): RawWallet => {
@@ -44,12 +59,10 @@ const parseDbObjectToWallet = (raw: RawWallet): Wallet => {
 };
 
 const mapStripeInfoToDbObject = (info: StripeInfo): RawStripeInfo => {
-  const { email, ownerUuid, ...rest } = info;
+  const { email, ...rest } = info;
 
   return {
     ...getStripeInfoPrimaryKey(email),
-    gs1pk: ownerUuid,
-    gs1sk: STRIPE_INFO_KEY,
     ...rest,
   };
 };
@@ -57,9 +70,34 @@ const mapStripeInfoToDbObject = (info: StripeInfo): RawStripeInfo => {
 const parseDbObjectToStripeInfo = (raw: RawStripeInfo): StripeInfo => {
   const info = {
     email: raw.pk,
-    ownerUuid: raw.gs1pk,
     stripeCustomerId: raw.stripeCustomerId,
     createdAt: raw.createdAt,
+  };
+
+  return info;
+};
+
+const mapStripeSubscriptionToDbObject = (
+  info: StripeSubscription
+): RawStripeSubscription => {
+  const { id, key, ...rest } = info;
+
+  return {
+    ...getStripeInfoPrimaryKey(id),
+    gs1pk: key,
+    gs1sk: STRIPE_SUBSCRIPTION_KEY,
+    ...rest,
+  };
+};
+
+const parseDbObjectToStripeSubscription = (
+  raw: RawStripeSubscription
+): StripeSubscription => {
+  const info = {
+    id: raw.pk,
+    stripeCustomerId: raw.stripeCustomerId,
+    createdAt: raw.createdAt,
+    key: raw.gs1pk,
   };
 
   return info;
@@ -182,15 +220,13 @@ export class BillingModel extends BaseModel {
    */
   public async saveStripeInfo(
     email: string,
-    stripeCustomerId: string,
-    ownerUuid: string
+    stripeCustomerId: string
   ): Promise<StripeInfo> {
     const createdAt = new Date(Date.now()).toISOString();
 
     const info = {
       createdAt,
       email,
-      ownerUuid,
       stripeCustomerId,
     };
 
@@ -213,6 +249,54 @@ export class BillingModel extends BaseModel {
     }
 
     return parseDbObjectToStripeInfo(rawInfo);
+  }
+
+  /**
+   * Store subscription id, stripeCustomerId, key and uuid
+   */
+  public async saveStripeSubscription(
+    id: string,
+    stripeCustomerId: string,
+    key: string
+  ): Promise<StripeSubscription> {
+    const createdAt = new Date(Date.now()).toISOString();
+
+    const sub = {
+      createdAt,
+      id,
+      stripeCustomerId,
+      key,
+    };
+
+    const dbItem = mapStripeSubscriptionToDbObject(sub);
+
+    await this.put(dbItem);
+
+    return sub;
+  }
+
+  public async getStripeSubscription(id: string): Promise<StripeSubscription> {
+    const pkey = getStripeSubscriptionPrimaryKey(id);
+
+    const rawInfo = await this.get(pkey).then(
+      result => result.Item as RawStripeSubscription
+    );
+
+    if (!rawInfo) {
+      throw new NotFoundError(
+        `Stripe subscription for customer "${id}" not found.`
+      );
+    }
+
+    return parseDbObjectToStripeSubscription(rawInfo);
+  }
+
+  public async addCreditsByStripeSubscription(
+    subscriptionId: string,
+    credits: number
+  ): Promise<Wallet> {
+    const subscription = await this.getStripeSubscription(subscriptionId);
+    return this.addCredits(subscription.key, credits);
   }
 }
 

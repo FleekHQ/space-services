@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { BillingModel } from '@packages/models';
+import _ from 'lodash';
 import createStripe from '../utils/stripe';
 
 const STAGE = process.env.ENV;
@@ -14,10 +15,12 @@ export const handler = async function(
 ): Promise<APIGatewayProxyResult> {
   let stripeEvent;
 
+  console.log('Headers', event.headers);
+
   try {
     stripeEvent = stripe.webhooks.constructEvent(
       event.body,
-      event.headers['stripe-signature'],
+      event.headers['Stripe-Signature'],
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
@@ -31,12 +34,23 @@ export const handler = async function(
     };
   }
 
+  const subscriptionId = _.get(
+    stripeEvent,
+    ['data', 'object', 'subscription'],
+    null
+  );
+
   switch (stripeEvent.type) {
     case 'invoice.paid':
       // @todo: add relevant amount of credits
-      // Used to provision services after the trial has ended.
-      // The status of the invoice will show up as paid. Store the status in your
-      // database to reference when a user accesses your service to avoid hitting rate limits.
+      if (subscriptionId) {
+        await billingDb.addCreditsByStripeSubscription(subscriptionId, 100);
+      } else {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ message: 'Subscripton was not found. ' }),
+        };
+      }
       break;
     case 'invoice.payment_failed':
       // If the payment fails or the customer does not have a valid payment method,
@@ -56,4 +70,9 @@ export const handler = async function(
     default:
     // Unexpected event type
   }
+
+  return {
+    statusCode: 200,
+    body: 'OK',
+  };
 };

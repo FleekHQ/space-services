@@ -20,6 +20,7 @@
     "@packages/apitools": "^0.0.1",
     "@packages/models": "^0.0.1",
     "aws-lambda": "^1.0.6",
+    "lodash": "^4.17.20",
     "stripe": "^8.97.0"
   },
   "devDependencies": {

@@ -33,16 +33,6 @@ package:
     - "**/node_modules/aws-sdk/**" # included on Lambda.
 
 functions:
-  createWallet:
-    handler: dist/index.createWallet
-    environment:
-      ENV: ${self:provider.stage}
-    events:
-      - http:
-          method: post
-          path: /wallet
-          cors: true
-
   claimWallet:
     handler: dist/index.claimWallet
     environment:
@@ -58,35 +48,25 @@ functions:
               paths:
                 key: true
 
-  createStripeCustomer:
-    handler: dist/create-stripe-customer.handler
+  createStripeSubscription:
+    handler: dist/stripe/create-subscription.handler
     environment:
       ENV: ${self:provider.stage}
-      STRIPE_WEBHOOK_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
+      STRIPE_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
     events:
       - http:
           method: post
-          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
-          path: /stripe-customer
-          cors: true
-
-  paymentStatusWebhook:
-    handler: dist/index.paymentStatusWebhook
-    environment:
-      ENV: ${self:provider.stage}
-    events:
-      - http:
-          method: post
-          path: /payments
+          path: /stripe/create-subscription
           cors: true
 
   stripeWebhook:
-    handler: dist/webhooks/stripe.handler
+    handler: dist/stripe/webhook.handler
     environment:
       ENV: ${self:provider.stage}
-      STRIPE_WEBHOOK_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
+      STRIPE_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
+      STRIPE_WEBHOOK_SECRET: ${ssm:stripe-wh-${self:provider.stage}~true}
     events:
       - http:
           method: post
-          path: /webhooks/stripe
+          path: /stripe/webhook
           cors: true

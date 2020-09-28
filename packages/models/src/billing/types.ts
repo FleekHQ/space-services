@@ -23,9 +23,6 @@ export interface RawWallet extends AppTableItem {
 }
 
 export interface StripeInfo {
-  // The uuid of the owner
-  ownerUuid: string;
-
   // Stripe customer e-mail address
   email: string;
 
@@ -37,6 +34,28 @@ export interface StripeInfo {
 }
 
 export interface RawStripeInfo extends AppTableItem {
+  // Stripe customer id
+  stripeCustomerId: string;
+
+  // Date of creation in ISO format
+  createdAt: string;
+}
+
+export interface StripeSubscription {
+  // Stripe subscription id
+  id: string;
+
+  // Stripe customer id
+  stripeCustomerId: string;
+
+  // Date of creation in ISO format
+  createdAt: string;
+
+  // product key
+  key: string;
+}
+
+export interface RawStripeSubscription extends AppTableItem {
   // Stripe customer id
   stripeCustomerId: string;
 
