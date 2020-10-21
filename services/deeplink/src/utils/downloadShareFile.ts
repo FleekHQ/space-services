@@ -77,7 +77,7 @@ interface EncryptedFileInfo {
 
 const getHashDownloadUrl = (hash: string): string => {
   const baseUrl =
-    process.env.GATSBY_IPFS_GATEWAY_BASE_URL || 'https://hub-dev.space.storage';
+    process.env.GATSBY_IPFS_GATEWAY_BASE_URL || 'https://hub.textile.io';
   return `${baseUrl}/ipfs/${hash}`;
 };
 
