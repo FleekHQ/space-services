@@ -59,7 +59,8 @@ interface SharedFileQueryParams {
 const ShareView: React.FC = () => {
   const queryParams = useQueryParams() as SharedFileQueryParams;
   const { fname, hash } = queryParams;
-  const deeplink = `space://files/share?fname=${fname}&hash=${hash}`;
+
+  const deeplink = `space://storage/shared-by?fname=${encodeURIComponent(fname)}&hash=${hash}`;
   const [openModal, setOpenModal] = useState(false);
   const [errorText, setErrorText] = useState('');
   const [saveWriter, setSaveWriter] = useState();
