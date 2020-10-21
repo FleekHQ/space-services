@@ -80,11 +80,11 @@ const parseDbObjectToStripeInfo = (raw: RawStripeInfo): StripeInfo => {
 const mapStripeSubscriptionToDbObject = (
   info: StripeSubscription
 ): RawStripeSubscription => {
-  const { id, key, ...rest } = info;
+  const { id, uuid, ...rest } = info;
 
   return {
     ...getStripeInfoPrimaryKey(id),
-    gs1pk: key,
+    gs1pk: uuid,
     gs1sk: STRIPE_SUBSCRIPTION_KEY,
     ...rest,
   };
@@ -97,7 +97,7 @@ const parseDbObjectToStripeSubscription = (
     id: raw.pk,
     stripeCustomerId: raw.stripeCustomerId,
     createdAt: raw.createdAt,
-    key: raw.gs1pk,
+    uuid: raw.gs1pk,
   };
 
   return info;
@@ -257,7 +257,7 @@ export class BillingModel extends BaseModel {
   public async saveStripeSubscription(
     id: string,
     stripeCustomerId: string,
-    key: string
+    uuid: string
   ): Promise<StripeSubscription> {
     const createdAt = new Date(Date.now()).toISOString();
 
@@ -265,7 +265,7 @@ export class BillingModel extends BaseModel {
       createdAt,
       id,
       stripeCustomerId,
-      key,
+      uuid,
     };
 
     const dbItem = mapStripeSubscriptionToDbObject(sub);
@@ -291,12 +291,27 @@ export class BillingModel extends BaseModel {
     return parseDbObjectToStripeSubscription(rawInfo);
   }
 
+  /**
+   * Adding credits to prepaid wallet
+   */
+  public async addCreditsToWallet(
+    walletKey: string,
+    credits: number
+  ): Promise<Wallet> {
+    return this.addCredits(walletKey, credits);
+  }
+
+  /**
+   * Adding credits to user wallet
+   * @param subscriptionId
+   * @param credits
+   */
   public async addCreditsByStripeSubscription(
     subscriptionId: string,
     credits: number
   ): Promise<Wallet> {
     const subscription = await this.getStripeSubscription(subscriptionId);
-    return this.addCredits(subscription.key, credits);
+    return this.addCredits(subscription.uuid, credits);
   }
 }
 

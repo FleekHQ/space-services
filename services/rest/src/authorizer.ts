@@ -2,7 +2,7 @@ import {
   CustomAuthorizerResult,
   Callback,
   Context,
-  CustomAuthorizerEvent,
+  APIGatewayTokenAuthorizerEvent,
 } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 
@@ -53,8 +53,8 @@ const generateAllow = (
   generatePolicy(principalId, 'Allow', resource, context);
 
 // eslint-disable-next-line
-export const handler = async function(
-  event: CustomAuthorizerEvent,
+export const handler = function(
+  event: APIGatewayTokenAuthorizerEvent,
   _context: Context,
   callback: Callback<CustomAuthorizerResult>
 ) {
@@ -62,7 +62,7 @@ export const handler = async function(
   const token = event.authorizationToken;
 
   if (!token) {
-    callback('Unauthorized request');
+    callback('Unauthorized');
     return;
   }
 
@@ -77,6 +77,6 @@ export const handler = async function(
       })
     );
   } catch (e) {
-    callback('Unauthorized request');
+    callback('Unauthorized');
   }
 };

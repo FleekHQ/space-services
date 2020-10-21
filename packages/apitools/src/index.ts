@@ -32,6 +32,10 @@ const getErrorMessage = (err: Error): string => {
 const DEFAULT_ERROR_CODE = 500;
 const DEFAULT_SUCCESS_CODE = 200;
 
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  // 'Access-Control-Allow-Credentials': true,
+};
 export const renderError = (
   err: Error,
   statusCode: number | undefined
@@ -43,6 +47,7 @@ export const renderError = (
   }
   return {
     statusCode: sc,
+    headers,
     body: JSON.stringify(
       {
         message: getErrorMessage(err),
@@ -59,6 +64,7 @@ export const renderSuccess = (
 ): APIGatewayProxyResult => {
   return {
     statusCode,
+    headers,
     body: JSON.stringify(response, null, 2),
   };
 };

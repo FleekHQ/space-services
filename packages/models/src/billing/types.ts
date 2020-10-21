@@ -52,7 +52,7 @@ export interface StripeSubscription {
   createdAt: string;
 
   // product key
-  key: string;
+  uuid: string;
 }
 
 export interface RawStripeSubscription extends AppTableItem {

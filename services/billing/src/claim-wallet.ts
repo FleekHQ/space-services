@@ -9,16 +9,25 @@ if (!process?.env?.ENV) {
 const STAGE = process.env.ENV;
 const billingDb = new BillingModel(STAGE);
 
+interface ClaimWalletPayload {
+  key: string;
+}
+
 export interface AuthContext {
   uuid: string;
   pubkey: string;
 }
 
-export const claimWallet = async (
+// eslint-disable-next-line
+export const handler = async (
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> => {
   const { uuid } = event.requestContext.authorizer;
-  const { key } = event.pathParameters;
+  const { key }: ClaimWalletPayload = JSON.parse(event.body);
+
+  if (!key) {
+    throw new Error('Key is not provided');
+  }
 
   const result = await processRequest(
     async (): Promise<void> => {
@@ -29,5 +38,3 @@ export const claimWallet = async (
 
   return result;
 };
-
-export default claimWallet;

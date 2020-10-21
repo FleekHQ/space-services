@@ -20,6 +20,13 @@ provider:
           - ""
           - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
             - "/*"
+    - Effect: Allow
+      Action:
+        - execute-api:ManageConnections
+      Resource:
+        - "arn:aws:execute-api:${self:provider.region}:${ssm:org-arn}:${self:provider.executeApi.${self:provider.stage}}/${opt:stage}/*"
+  executeApi:
+    dev: 413h5xnqp8
 
 plugins:
   - serverless-jetpack
@@ -34,19 +41,15 @@ package:
 
 functions:
   claimWallet:
-    handler: dist/index.claimWallet
+    handler: dist/claim-wallet.handler
     environment:
       ENV: ${self:provider.stage}
     events:
       - http:
           method: post
-          path: /wallet/{key}
+          path: /wallet/claim
           cors: true
           authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
-          request:
-            parameters:
-              paths:
-                key: true
 
   createStripeSubscription:
     handler: dist/stripe/create-subscription.handler
@@ -65,8 +68,48 @@ functions:
       ENV: ${self:provider.stage}
       STRIPE_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
       STRIPE_WEBHOOK_SECRET: ${ssm:stripe-wh-${self:provider.stage}~true}
+      PRO_PLAN_ID: price_1HbnI7CEFZDhKYzKKfCbtHnX
+      APIG_ENDPOINT: ${self:provider.executeApi.${self:provider.stage}}.execute-api.us-west-2.amazonaws.com/${opt:stage}
     events:
       - http:
           method: post
           path: /stripe/webhook
           cors: true
+
+  createCoinbaseLicence:
+    handler: dist/coinbase/create-licence.handler
+    environment:
+      ENV: ${self:provider.stage}
+    events:
+      - http:
+          method: post
+          path: /coinbase/create-licence
+          cors:
+            origin: '*'
+          request:
+            parameters:
+              paths:
+                key: true
+
+  cancelStripeSubscription:
+    handler: dist/stripe/cancel-subscription.handler
+    environment:
+      ENV: ${self:provider.stage}
+      STRIPE_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
+    events:
+      - http:
+          method: post
+          path: /stripe/cancel-subscription
+          cors: true
+          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
+
+  getAccount:
+    handler: dist/account.handler
+    environment:
+      ENV: ${self:provider.stage}
+    events:
+      - http:
+          method: get
+          path: /account
+          cors: true
+          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
