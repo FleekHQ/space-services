@@ -40,17 +40,6 @@ package:
     - "**/node_modules/aws-sdk/**" # included on Lambda.
 
 functions:
-  claimWallet:
-    handler: dist/claim-wallet.handler
-    environment:
-      ENV: ${self:provider.stage}
-    events:
-      - http:
-          method: post
-          path: /wallet/claim
-          cors: true
-          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
-
   createStripeSubscription:
     handler: dist/stripe/create-subscription.handler
     environment:
@@ -75,21 +64,6 @@ functions:
           method: post
           path: /stripe/webhook
           cors: true
-
-  createCoinbaseLicence:
-    handler: dist/coinbase/create-licence.handler
-    environment:
-      ENV: ${self:provider.stage}
-    events:
-      - http:
-          method: post
-          path: /coinbase/create-licence
-          cors:
-            origin: '*'
-          request:
-            parameters:
-              paths:
-                key: true
 
   cancelStripeSubscription:
     handler: dist/stripe/cancel-subscription.handler

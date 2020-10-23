@@ -1,12 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { IdentityModel } from '@packages/models';
-import createDbModel from '@packages/models/dist/billing/dbModel';
+import { IdentityModel, createBillingModel } from '@packages/models';
 import createStripe from '../utils/stripe';
 
 const STAGE = process.env.ENV;
 
-const dbModel = createDbModel(STAGE);
+const dbModel = createBillingModel(STAGE);
 const identityDb = new IdentityModel(STAGE);
 const stripe = createStripe();
 

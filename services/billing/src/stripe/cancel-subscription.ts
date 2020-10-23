@@ -1,11 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import { APIGatewayProxyResult, APIGatewayProxyEventBase } from 'aws-lambda';
-import createDbModel from '@packages/models/dist/billing/dbModel';
+import { createBillingModel } from '@packages/models';
 import createStripe from '../utils/stripe';
 
 const STAGE = process.env.ENV;
 
-const dbModel = createDbModel(STAGE);
+const dbModel = createBillingModel(STAGE);
 const stripe = createStripe();
 
 export interface AuthContext {
