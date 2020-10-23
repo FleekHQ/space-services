@@ -20,6 +20,13 @@ provider:
           - ""
           - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
             - "/*"
+    - Effect: Allow
+      Action:
+        - execute-api:ManageConnections
+      Resource:
+        - "arn:aws:execute-api:${self:provider.region}:${ssm:org-arn}:${self:provider.executeApi.${self:provider.stage}}/${opt:stage}/*"
+  executeApi:
+    dev: 413h5xnqp8
 
 plugins:
   - serverless-jetpack
@@ -33,37 +40,50 @@ package:
     - "**/node_modules/aws-sdk/**" # included on Lambda.
 
 functions:
-  createWallet:
-    handler: dist/index.createWallet
+  createStripeSubscription:
+    handler: dist/stripe/create-subscription.handler
     environment:
       ENV: ${self:provider.stage}
+      STRIPE_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
     events:
       - http:
           method: post
-          path: /wallet
+          path: /stripe/create-subscription
           cors: true
 
-  claimWallet:
-    handler: dist/index.claimWallet
+  stripeWebhook:
+    handler: dist/stripe/webhook.handler
     environment:
       ENV: ${self:provider.stage}
+      STRIPE_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
+      STRIPE_WEBHOOK_SECRET: ${ssm:stripe-wh-${self:provider.stage}~true}
+      PRO_PLAN_ID: price_1HbnI7CEFZDhKYzKKfCbtHnX
+      APIG_ENDPOINT: ${self:provider.executeApi.${self:provider.stage}}.execute-api.us-west-2.amazonaws.com/${opt:stage}
     events:
       - http:
           method: post
-          path: /wallet/{key}
+          path: /stripe/webhook
+          cors: true
+
+  cancelStripeSubscription:
+    handler: dist/stripe/cancel-subscription.handler
+    environment:
+      ENV: ${self:provider.stage}
+      STRIPE_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
+    events:
+      - http:
+          method: post
+          path: /stripe/cancel-subscription
           cors: true
           authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
-          request:
-            parameters:
-              paths:
-                key: true
 
-  paymentStatusWebhook:
-    handler: dist/index.paymentStatusWebhook
+  getAccount:
+    handler: dist/account.handler
     environment:
       ENV: ${self:provider.stage}
     events:
       - http:
-          method: post
-          path: /payments
+          method: get
+          path: /account
           cors: true
+          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer

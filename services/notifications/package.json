@@ -1,8 +1,7 @@
 {
-  "name": "billing",
+  "name": "notifications",
   "version": "0.0.1",
-  "description": "Track payments and manage credits",
-  "author": "Daniel Merrill (@dmerrill6)",
+  "description": "Websocket notifications",
   "license": "MIT",
   "main": "dist/index",
   "typings": "dist/index",
@@ -17,19 +16,19 @@
     "lint": "eslint --ext ts,js ./src"
   },
   "dependencies": {
-    "@packages/apitools": "^0.0.1",
     "@packages/models": "^0.0.1",
-    "@types/coinbase-commerce-node": "^1.0.5",
     "aws-lambda": "^1.0.6",
-    "aws-sdk": "^2.775.0",
-    "coinbase-commerce-node": "^1.0.4",
-    "lodash": "^4.17.20",
-    "stripe": "^8.97.0"
+    "aws-sdk": "^2.707.0",
+    "isomorphic-ws": "^4.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "ws": "^7.3.0"
   },
   "devDependencies": {
     "@packages/devtools": "^0.0.1",
     "@types/aws-lambda": "^8.10.56",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^12.12.21",
+    "serverless-domain-manager": "^4.2.0",
     "typescript": "^3.7.3"
   },
   "private": true

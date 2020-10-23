@@ -1,110 +1,115 @@
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Wallet, RawWallet } from './types';
-import base58Keygen from './base58-keygen';
-import deriveKey from './key-processor';
-import { BaseModel } from '../base';
-import { PrimaryKey } from '../types';
+import _ from 'lodash';
+import DbTable from '../dbTable';
+import accountApi, { Account, UpdateAccountInput } from './ap/account';
+import billingAccountApi, {
+  BillingAccount,
+  UpdateBillingAccountInput,
+} from './ap/billingAccount';
+import stripeCustomerApi, { StripeCustomer } from './ap/stripeCustomer';
+import stripeSubscriptionApi, {
+  StripeSubscription,
+  StripeSubscriptionInput,
+} from './ap/stripeSubscription';
 
-import { NotFoundError, ValidationError } from '../errors';
-
-const WALLET_KEY = 'wallet';
-const UNOWNED_WALLET_UUID = '0';
-
-export const getWalletPrimaryKey = (keyHash: string): PrimaryKey => ({
-  pk: keyHash,
-  sk: WALLET_KEY,
-});
-
-const mapWalletToDbObject = (wallet: Wallet): RawWallet => {
-  const { ownerUuid, keyHash, ...rest } = wallet;
-
-  return {
-    ...getWalletPrimaryKey(keyHash),
-    gs1pk: ownerUuid,
-    gs1sk: WALLET_KEY,
-    ...rest,
-  };
+export type AccountWithBilling = Account & {
+  billingAccount: BillingAccount;
 };
 
-const parseDbObjectToWallet = (raw: RawWallet): Wallet => {
-  const wallet: Wallet = {
-    keyHash: raw.pk,
-    ownerUuid: raw.gs1pk,
-    credits: raw.credits,
-    createdAt: raw.createdAt,
-  };
+interface ModelApi {
+  getOrCreateAccount: (ownerId: string) => Promise<AccountWithBilling>;
+  saveStripeCustomer: (
+    email: string,
+    uuid: string,
+    stripeCustomerId: string
+  ) => Promise<StripeCustomer>;
+  getStripeCustomer: (email: string) => Promise<StripeCustomer>;
+  updateBillingAccount: (
+    uuid: string,
+    data: UpdateBillingAccountInput
+  ) => Promise<BillingAccount>;
+  saveStripeSubscription: (
+    data: StripeSubscriptionInput
+  ) => Promise<StripeSubscription>;
 
-  return wallet;
-};
-
-export class BillingModel extends BaseModel {
-  constructor(env: string, client: DocumentClient = new DocumentClient()) {
-    const table = `space_table_${env}`;
-    super(table, client);
-  }
-
-  // Creates a wallet, and returns the key that can be derived to obtain the wallet back
-  public async createWallet(): Promise<string> {
-    const createdAt = new Date(Date.now()).toISOString();
-    const key = base58Keygen(16);
-    const keyHash = deriveKey(key);
-
-    let existingWallet = null;
-    try {
-      existingWallet = await this.getWalletByKey(key);
-    } catch (error) {
-      // Do nothing
-    }
-
-    if (existingWallet) {
-      // Very unlikely error (1 in 1.64 * 10^28)
-      throw new ValidationError('Wallet key collision. Please try again.');
-    }
-
-    const newWallet: Wallet = {
-      createdAt,
-      ownerUuid: UNOWNED_WALLET_UUID,
-      keyHash,
-      credits: 0,
-    };
-
-    const dbItem = mapWalletToDbObject(newWallet);
-
-    await this.put(dbItem);
-
-    return key;
-  }
-
-  public async getWalletByKey(key: string): Promise<Wallet> {
-    const keyHash = deriveKey(key);
-    const rawWallet = await this.get(getWalletPrimaryKey(keyHash)).then(
-      result => result.Item as RawWallet
-    );
-
-    if (!rawWallet) {
-      throw new NotFoundError(`Wallet with key ${key} not found.`);
-    }
-
-    return parseDbObjectToWallet(rawWallet);
-  }
-
-  public async claimWallet(key: string, ownerUuid: string): Promise<Wallet> {
-    const existingWallet = await this.getWalletByKey(key);
-
-    if (existingWallet.ownerUuid !== UNOWNED_WALLET_UUID) {
-      throw new ValidationError('Key has already been claimed.');
-    }
-
-    const updatedWallet: Wallet = {
-      ...existingWallet,
-      ownerUuid,
-    };
-
-    const dbItem = mapWalletToDbObject(updatedWallet);
-
-    await this.put(dbItem);
-    return updatedWallet;
-  }
+  getStripeSubscription: (id: string) => Promise<StripeSubscription>;
+  updateAccount: (
+    accountId: string,
+    data: UpdateAccountInput
+  ) => Promise<Account>;
 }
 
-export default BillingModel;
+export default (env: string): ModelApi => {
+  const db = new DbTable(`space_table_${env}`);
+  const dbApi = _.extend(
+    {},
+    accountApi(db),
+    billingAccountApi(db),
+    stripeCustomerApi(db),
+    stripeSubscriptionApi(db)
+  );
+
+  return {
+    getOrCreateAccount: async (
+      ownerId: string
+    ): Promise<AccountWithBilling> => {
+      let account: Account;
+      let billingAccount: BillingAccount;
+
+      try {
+        account = await dbApi.getAccount(ownerId);
+        billingAccount = await dbApi.getBillingAccount(
+          account.billingAccountId
+        );
+      } catch (e) {
+        billingAccount = await dbApi.createBillingAccount(ownerId);
+        account = await dbApi.createAccount({
+          billingAccountId: billingAccount.id,
+          id: ownerId,
+          type: 'personal',
+        });
+      }
+
+      return _.extend(account, { billingAccount });
+    },
+
+    getStripeCustomer: async (email: string): Promise<StripeCustomer> => {
+      return dbApi.getStripeCustomer(email);
+    },
+
+    saveStripeCustomer: async (
+      email: string,
+      uuid: string,
+      stripeCustomerId: string
+    ): Promise<StripeCustomer> => {
+      return dbApi.saveStripeCustomer({
+        email,
+        uuid,
+        stripeCustomerId,
+      });
+    },
+
+    updateBillingAccount: async (
+      billingAccountId: string,
+      data: UpdateBillingAccountInput
+    ): Promise<BillingAccount> => {
+      return dbApi.updateBillingAccount(billingAccountId, data);
+    },
+
+    saveStripeSubscription: async (
+      data: StripeSubscriptionInput
+    ): Promise<StripeSubscription> => {
+      return dbApi.createStripeSubscription(data);
+    },
+
+    getStripeSubscription: async (id: string): Promise<StripeSubscription> => {
+      return dbApi.getStripeSubscription(id);
+    },
+
+    updateAccount: async (
+      accountId: string,
+      data: UpdateAccountInput
+    ): Promise<Account> => {
+      return dbApi.updateAccount(accountId, data);
+    },
+  };
+};
