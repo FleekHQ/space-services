@@ -30,6 +30,11 @@ const sendMessageToClient = (
     })
     .promise();
 
+const okStatus = {
+  statusCode: 200,
+  body: 'OK',
+};
+
 // eslint-disable-next-line
 export const handler = async function(
   event: APIGatewayProxyEvent
@@ -61,13 +66,17 @@ export const handler = async function(
     null
   );
 
+  let subscription;
+
   switch (stripeEvent.type) {
     case 'invoice.paid':
       try {
-        const subscription = await billingDb.getStripeSubscription(
-          subscriptionId
-        );
+        subscription = await billingDb.getStripeSubscription(subscriptionId);
+      } catch (e) {
+        return okStatus;
+      }
 
+      try {
         const lines = _.get(
           stripeEvent,
           ['data', 'object', 'lines', 'data'],
@@ -94,6 +103,8 @@ export const handler = async function(
             stripeSubscriptionId: subscription.id,
             billingMode: BillingMode.STRIPE,
           });
+
+          // todo store payment under billing account
 
           try {
             // @todo for team accounts we need to iterate over members
@@ -144,8 +155,5 @@ export const handler = async function(
     // Unexpected event type
   }
 
-  return {
-    statusCode: 200,
-    body: 'OK',
-  };
+  return okStatus;
 };
