@@ -76,6 +76,21 @@ export const handler = async function(
     throw new Error('Missing pubkey param');
   }
 
+  const address = EthCrypto.publicKey.toAddress(pubkey);
+  let user;
+
+  try {
+    user = await identityDb.getIdentityByAddress(address);
+  } catch (e) {
+    sendMessageToClient(connectionId, {
+      type: 'error',
+      value: {
+        message: `User address "${address}" was not found.`,
+      },
+    });
+    return okStatus;
+  }
+
   const challenge = crypto.randomBytes(64).toString('hex');
 
   const challengeEncrypted = await EthCrypto.encryptWithPublicKey(
@@ -94,16 +109,14 @@ export const handler = async function(
   const answer = await findChallengeAnswer(pubkey);
 
   if (answer !== challenge) {
-    console.log('answer does not match challenge', {
-      answer,
-      challenge,
+    sendMessageToClient(connectionId, {
+      type: 'error',
+      value: {
+        message: `Auth challenge does not match.`,
+      },
     });
     return okStatus;
   }
-
-  const address = EthCrypto.publicKey.toAddress(pubkey);
-
-  const user = await identityDb.getIdentityByAddress(address);
 
   const authPayload: AuthContext = {
     pubkey,
