@@ -6,7 +6,6 @@ import { defer } from 'rxjs';
 import { retryWhen, delay, take, switchMap } from 'rxjs/operators';
 import EthCrypto from 'eth-crypto';
 import crypto from 'crypto';
-import { getAPISig } from './utils';
 
 (global as any).WebSocket = require('isomorphic-ws');
 
@@ -19,6 +18,7 @@ interface TokenRequestPayload {
 interface AuthContext {
   uuid: string;
   pubkey: string;
+  address?: string;
 }
 
 const STAGE = process.env.ENV;
@@ -101,23 +101,23 @@ export const handler = async function(
     return okStatus;
   }
 
-  const user = await identityDb.getIdentityByPublicKey(pubkey);
+  const address = EthCrypto.publicKey.toAddress(pubkey);
+
+  const user = await identityDb.getIdentityByAddress(address);
 
   const authPayload: AuthContext = {
     pubkey,
     uuid: user.uuid,
+    address,
   };
 
   const appToken = jwt.sign(authPayload, JWT_SECRET, {
     expiresIn: '30d',
   });
 
-  const auth = await getAPISig(24 * 3600);
-
   const payload = {
-    ...auth,
-    key: process.env.TXL_USER_KEY,
     appToken,
+    address,
   };
 
   await sendMessageToClient(connectionId, {
