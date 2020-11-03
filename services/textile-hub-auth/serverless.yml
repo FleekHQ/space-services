@@ -76,6 +76,23 @@ functions:
             - Ref: AWS::Region
             - .amazonaws.com/
             - ${self:provider.stage}
+  wsEthToken:
+    handler: dist/ethToken.handler
+    timeout: 60
+    events:
+      - websocket: ethToken
+    environment:
+      JWT_SECRET: ${ssm:txl-hub-jwt-secret-${self:provider.stage}~true}
+      API: ${ssm:txl-hub-url-${self:provider.stage}~true}
+      ENV: ${self:provider.stage}
+      APIG_ENDPOINT:
+        Fn::Join:
+          - ''
+          - - Ref: WebsocketsApi
+            - .execute-api.
+            - Ref: AWS::Region
+            - .amazonaws.com/
+            - ${self:provider.stage}
   wsChallenge:
     handler: dist/challenge.handler
     events:

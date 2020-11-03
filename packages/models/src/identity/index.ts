@@ -20,6 +20,7 @@ import {
   ProofRecord,
   RawIdentityRecord,
   RawAddressRecord,
+  AddressRecord,
 } from './types';
 import { validateIdentity } from './validations';
 import { BaseModel } from '../base';
@@ -187,7 +188,29 @@ export class IdentityModel extends BaseModel {
     return parseDbObjectToIdentity(res.Attributes as RawIdentityRecord);
   }
 
-  private async changeUsername(uuid: string, username: string) {
+  /**
+   * Store address relation to uuid
+   * @param uuid
+   * @param address
+   */
+  public async addEthAddress(
+    uuid: string,
+    address: string
+  ): Promise<AddressRecord> {
+    const obj = {
+      uuid,
+      address,
+      createdAt: new Date().toISOString(),
+    };
+
+    const rawObj = mapAddressDbObject(obj);
+
+    await this.put(rawObj);
+
+    return obj;
+  }
+
+  private async changeUsername(uuid: string, username: string): Promise<void> {
     const usernameExists = await this.getIdentityByUsername(username).catch(
       () => false
     );
