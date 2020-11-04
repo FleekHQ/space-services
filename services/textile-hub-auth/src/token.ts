@@ -102,6 +102,10 @@ export const handler = async function(
     }
   );
 
+  console.log('challenge passed', {
+    pubkey,
+  });
+
   const hexPubKey = multibase
     .decode(pubkey)
     .toString('hex')
