@@ -45,7 +45,7 @@ package:
 
 functions:
   storeVault:
-    handler: dist/index.storeVault
+    handler: dist/store.handler
     environment:
       ENV: ${self:provider.stage}
       SALT_SECRET: ${ssm:vault-salt-secret-${self:provider.stage}~true}
@@ -60,7 +60,7 @@ functions:
               application/json: ${file(schemas/store-vault.json)}
 
   retrieveVault:
-    handler: dist/index.retrieveVault
+    handler: dist/retrive.handler
     environment:
       ENV: ${self:provider.stage}
       SALT_SECRET: ${ssm:vault-salt-secret-${self:provider.stage}~true}
@@ -75,3 +75,13 @@ functions:
             parameters:
               paths:
                 uuid: true
+  retrieveVaultWithAuth:
+    handler: dist/retrieve-with-auth.handler
+    environment:
+      ENV: ${self:provider.stage}
+    events:
+      - http:
+          method: get
+          path: /vaults/mine
+          cors: true
+          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer

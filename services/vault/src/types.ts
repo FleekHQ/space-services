@@ -3,7 +3,7 @@ export interface StoreVaultRequest {
   vault: string;
 
   // Vault service key
-  vsk: string;
+  vsk?: string;
 }
 
 export interface RetrieveVaultRequest {

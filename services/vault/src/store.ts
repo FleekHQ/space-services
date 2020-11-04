@@ -16,7 +16,8 @@ export interface AuthContext {
   pubkey: string;
 }
 
-export const storeVault = async (
+// eslint-disable-next-line
+export const handler = async (
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> => {
   const result = await processRequest(
@@ -29,14 +30,12 @@ export const storeVault = async (
         throw new UnauthorizedError('Authorization token is invalid.');
       }
 
-      // Calculate the key we store in the db to check if the user is providing the correct password
-      // when retreiving the vault later on.
-      const vskHash = computeVskHash(vsk, uuid);
-
       // Store vskHash together with the vault
       await vaultDb.storeVault({
         uuid,
-        kdfHash: vskHash.toString('hex'),
+        // If vsk is provided: calculate the key we store in the db to check if the user is providing the correct password
+        // when retreiving the vault later on
+        kdfHash: vsk ? computeVskHash(vsk, uuid).toString('hex') : null,
         vault,
       });
     },
@@ -47,5 +46,3 @@ export const storeVault = async (
 
   return result;
 };
-
-export default storeVault;

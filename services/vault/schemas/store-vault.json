@@ -4,8 +4,7 @@
   "type": "object",
   "title": "Store Vault",
   "required": [
-    "vault",
-    "vsk"
+    "vault"
   ],
   "properties": {
     "vault": {

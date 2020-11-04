@@ -1,15 +1,19 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventBase, APIGatewayProxyResult } from 'aws-lambda';
 import {
   VaultModel,
   UnauthorizedError,
   ValidationError,
 } from '@packages/models';
 import { processRequest } from '@packages/apitools';
-import { RetrieveVaultRequest, RetrieveVaultResponse } from './types';
-import { computeVskHash } from './shared';
+import { RetrieveVaultResponse } from './types';
 
 if (!process?.env?.ENV) {
   throw new Error('ENV variable not set');
+}
+
+interface AuthContext {
+  uuid: string;
+  pubkey: string;
 }
 
 const STAGE = process.env.ENV;
@@ -17,25 +21,21 @@ const STAGE = process.env.ENV;
 const vaultDb = new VaultModel(STAGE);
 
 const incorrectUuidOrPass = new UnauthorizedError(
-  'Incorrect uuid or password.'
+  'No usable backup stored for this user.'
 );
 
-export const retrieveVault = async (
-  event: APIGatewayProxyEvent
+// eslint-disable-next-line
+export const handler = async (
+  event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> => {
   const result = await processRequest(
     async (): Promise<RetrieveVaultResponse> => {
-      const request: RetrieveVaultRequest = JSON.parse(event.body);
-      const { vsk } = request;
-      const { uuid } = event.pathParameters;
+      const { uuid } = event.requestContext.authorizer;
 
       if (!uuid || uuid === '') {
         throw new ValidationError('uuid cannot be blank.');
       }
 
-      // We compute the vsk hash again. If it doesn't match the stored one,
-      // it means either the uuid or the password is wrong.
-      const vskHash = computeVskHash(vsk, uuid);
       let storedVault;
       try {
         storedVault = await vaultDb.getVaultByUuid(uuid);
@@ -44,11 +44,11 @@ export const retrieveVault = async (
         throw incorrectUuidOrPass;
       }
 
-      if (vskHash.toString('hex') !== storedVault.kdfHash) {
+      // if there was password used for vault, we throw an error
+      if (storedVault.kdfHash) {
         throw incorrectUuidOrPass;
       }
 
-      // If we are here, it means the password is correct
       return {
         encryptedVault: storedVault.vault,
       };
@@ -60,5 +60,3 @@ export const retrieveVault = async (
 
   return result;
 };
-
-export default retrieveVault;
