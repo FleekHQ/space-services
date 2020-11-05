@@ -60,7 +60,7 @@ functions:
               application/json: ${file(schemas/store-vault.json)}
 
   retrieveVault:
-    handler: dist/retrive.handler
+    handler: dist/retrieve.handler
     environment:
       ENV: ${self:provider.stage}
       SALT_SECRET: ${ssm:vault-salt-secret-${self:provider.stage}~true}
