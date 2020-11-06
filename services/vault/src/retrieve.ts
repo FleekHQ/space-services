@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import {
   VaultModel,
+  IdentityModel,
   UnauthorizedError,
   ValidationError,
 } from '@packages/models';
@@ -15,7 +16,7 @@ if (!process?.env?.ENV) {
 const STAGE = process.env.ENV;
 
 const vaultDb = new VaultModel(STAGE);
-
+const identityDb = new IdentityModel(STAGE);
 const incorrectUuidOrPass = new UnauthorizedError(
   'Incorrect uuid or password.'
 );
@@ -28,10 +29,19 @@ export const handler = async (
     async (): Promise<RetrieveVaultResponse> => {
       const request: RetrieveVaultRequest = JSON.parse(event.body);
       const { vsk } = request;
-      const { uuid } = event.pathParameters;
+      let { uuid } = event.pathParameters;
 
       if (!uuid || uuid === '') {
         throw new ValidationError('uuid cannot be blank.');
+      }
+
+      // if uuid matches eth address, we try to resolve uuid from address
+      if (uuid.startsWith('0x') && uuid.length === 66) {
+        const identity = await identityDb.getIdentityByAddress(uuid);
+
+        if (identity) {
+          uuid = identity.uuid;
+        }
       }
 
       // We compute the vsk hash again. If it doesn't match the stored one,

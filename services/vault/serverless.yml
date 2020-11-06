@@ -75,13 +75,13 @@ functions:
             parameters:
               paths:
                 uuid: true
-  retrieveVaultWithAuth:
-    handler: dist/retrieve-with-auth.handler
-    environment:
-      ENV: ${self:provider.stage}
-    events:
-      - http:
-          method: get
-          path: /vaults/mine
-          cors: true
-          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
+  # retrieveVaultWithAuth:
+  #   handler: dist/retrieve-with-auth.handler
+  #   environment:
+  #     ENV: ${self:provider.stage}
+  #   events:
+  #     - http:
+  #         method: get
+  #         path: /vaults/mine
+  #         cors: true
+  #         authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
