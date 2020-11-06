@@ -36,7 +36,7 @@ export const handler = async (
       }
 
       // if uuid matches eth address, we try to resolve uuid from address
-      if (uuid.startsWith('0x') && uuid.length === 66) {
+      if (uuid.startsWith('0x') && uuid.length === 42) {
         const identity = await identityDb.getIdentityByAddress(uuid);
 
         if (identity) {
