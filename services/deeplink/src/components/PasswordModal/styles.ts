@@ -37,9 +37,12 @@ export const InputWrapper = styled.div`
   border-radius: 3px;
   border: solid 1px #c4c4c4;
   margin: 18px 0 15px;
-  padding: 0 13px;
+  padding: 0 7px 0 13px;
   &:focus-within {
     border-color: #000;
+    svg {
+      color: #000;
+    }
   }
 `;
 
@@ -142,11 +145,13 @@ const blackbutton = ecss`
 
 export const IconButton = styled.button`
   width: 37px;
+  padding-top: 4px;
   box-sizing: border-box;
   border: none;
   background-color: transparent;
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
+  color: #666;
   &:focus {
     outline: none;
   }
