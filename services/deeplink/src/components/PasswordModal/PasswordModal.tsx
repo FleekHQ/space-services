@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/pro-light-svg-icons/faTimes';
+import { faEyeSlash } from '@fortawesome/pro-regular-svg-icons/faEyeSlash';
+import { faEye } from '@fortawesome/pro-regular-svg-icons/faEye';
 
 import {
   css,
@@ -15,6 +17,8 @@ import {
   Spinner,
   SpinnerContainer,
   ErrorText,
+  IconButton,
+  InputWrapper,
 } from './styles';
 
 export interface PasswordModalProps {
@@ -42,6 +46,7 @@ const PasswordModal: React.FC<PasswordModalProps> = props => {
   } = props;
 
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   if (!open) return null;
 
@@ -52,19 +57,30 @@ const PasswordModal: React.FC<PasswordModalProps> = props => {
           <Title>Enter File Password</Title>
           <FontAwesomeIcon icon={faTimes} css={css.icon} onClick={onClose} />
         </Header>
-        <Input
-          placeholder="File Password"
-          type="password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
+        <InputWrapper>
+          <Input
+            placeholder="File Password"
+            type={isPasswordVisible ? "text" : "password"}
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+          <IconButton
+            onClick={() => setIsPasswordVisible(state => !state)}
+          >
+            <FontAwesomeIcon icon={isPasswordVisible ? faEyeSlash : faEye} />
+          </IconButton>
+        </InputWrapper>
         {<ErrorText>{errorText}</ErrorText>}
         {!loading && (
           <ButtonContainer>
             <Button css={css.whitebutton} onClick={onCancel}>
               Cancel
             </Button>
-            <Button css={css.blackbutton} onClick={() => onOpen(password)}>
+            <Button
+              css={css.blackbutton}
+              onClick={() => onOpen(password)}
+              disabled={!password}
+            >
               Open
             </Button>
           </ButtonContainer>

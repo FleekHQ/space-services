@@ -32,12 +32,27 @@ export const Header = styled.div`
   justify-content: space-between;
 `;
 
-export const Input = styled.input`
-  height: 34px;
+export const InputWrapper = styled.div`
+  display: flex;
   border-radius: 3px;
   border: solid 1px #c4c4c4;
-  padding: 0 13px;
   margin: 18px 0 15px;
+  padding: 0 7px 0 13px;
+  &:focus-within {
+    border-color: #000;
+    svg {
+      color: #000;
+    }
+  }
+`;
+
+export const Input = styled.input`
+  height: 34px;
+  border: none;
+  flex-grow: 1;
+  &:focus {
+    outline: none;
+  }
   &::placeholder {
     color: #666;
   }
@@ -114,12 +129,31 @@ const whitebutton = ecss`
 `;
 
 const blackbutton = ecss`
-  background-color: #cbcbcb;
-  color: #7b7b7b;
+  background-color: #000;
+  color: #fff;
   &:hover {
-    transition: all 0.3s ease;
-    background-color: #000;
-    color: #fff;
+    transition: opacity ease 0.2s;
+    opacity: 0.75;
+  }
+  &:disabled {
+    background-color: #cbcbcb;
+    color: #7b7b7b;
+    cursor: default;
+    opacity: 1;
+  }
+`;
+
+export const IconButton = styled.button`
+  width: 37px;
+  padding-top: 4px;
+  box-sizing: border-box;
+  border: none;
+  background-color: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  color: #666;
+  &:focus {
+    outline: none;
   }
 `;
 
