@@ -12,7 +12,7 @@ const RightSection: React.FC = () => {
     <Container>
       <img src={spaceLogo} css={css.logo} alt="space-logo" />
       <Title>Don&apos;t have Space installed?</Title>
-      <a href="https://space.storage/download" target="_blank" rel="noreferrer">
+      <a href="https://github.com/FleekHQ/space-desktop/releases/latest" target="_blank" rel="noreferrer">
         <Button>Download for Free</Button>
       </a>
       <SubTitle>Available on</SubTitle>
