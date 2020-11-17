@@ -79,7 +79,6 @@ const PasswordModal: React.FC<PasswordModalProps> = props => {
             <Button
               css={css.blackbutton}
               onClick={() => onOpen(password)}
-              disabled={!password}
             >
               Open
             </Button>
