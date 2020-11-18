@@ -28,6 +28,12 @@ import { NotFoundError, ValidationError } from '../errors';
 
 const allowedIdentityKeys = ['displayName', 'avatarUrl', 'username'];
 
+interface AddEthAddressPayload {
+  address: string;
+  provider?: string;
+  metadata?: any;
+}
+
 export class IdentityModel extends BaseModel {
   constructor(env: string, client: DocumentClient = new DocumentClient()) {
     const table = `space_table_${env}`;
@@ -57,7 +63,11 @@ export class IdentityModel extends BaseModel {
       await this.put(mapUsernameDbObject(newIdentity));
     }
     // reserve address for this identity
-    await this.put(mapAddressDbObject(newIdentity));
+    await this.put(
+      mapAddressDbObject({
+        ...newIdentity,
+      })
+    );
 
     // create identity
     await this.put(dbItem);
@@ -195,11 +205,15 @@ export class IdentityModel extends BaseModel {
    */
   public async addEthAddress(
     uuid: string,
-    address: string
+    payload: AddEthAddressPayload
   ): Promise<AddressRecord> {
+    const { address, provider, metadata } = payload;
+
     const obj = {
       uuid,
       address,
+      provider,
+      metadata,
       createdAt: new Date().toISOString(),
     };
 
@@ -208,6 +222,26 @@ export class IdentityModel extends BaseModel {
     await this.put(rawObj);
 
     return obj;
+  }
+
+  public async getAddressesByUuid(uuid: string): Promise<AddressRecord[]> {
+    const KeyConditionExpression: DocumentClient.KeyExpression =
+      'gs1pk = :uuid AND begins_with(gs1sk, :sk)';
+    const ExpressionAttributeValues: DocumentClient.ExpressionAttributeValueMap = {
+      ':uuid': `${uuid}`,
+      ':sk': 'address',
+    };
+
+    const params = {
+      TableName: this.table,
+      KeyConditionExpression,
+      ExpressionAttributeValues,
+      IndexName: 'gs1',
+    };
+
+    const result = await this.query(params);
+
+    return result.Items.map(parseDbObjectToAddress);
   }
 
   private async changeUsername(uuid: string, username: string): Promise<void> {

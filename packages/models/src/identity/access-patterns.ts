@@ -104,6 +104,8 @@ export const mapAddressDbObject = (input: AddressRecord): RawAddressRecord => {
     gs1pk: input.uuid,
     gs1sk: `address`,
     createdAt: input.createdAt,
+    provider: input.provider || 'main',
+    metadata: input.metadata || null,
   };
 };
 
@@ -113,4 +115,6 @@ export const parseDbObjectToAddress = (
   uuid: dbObject.gs1pk,
   address: dbObject.pk,
   createdAt: dbObject.createdAt,
+  provider: dbObject.provider || 'main',
+  metadata: dbObject.metadata || null,
 });

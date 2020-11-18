@@ -30,6 +30,8 @@ export const handler = async (
         throw new UnauthorizedError('Authorization token is invalid.');
       }
 
+      console.log('storing vault for', { vault, vsk });
+
       // Store vskHash together with the vault
       await vaultDb.storeVault({
         uuid,

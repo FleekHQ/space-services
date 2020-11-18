@@ -35,12 +35,15 @@ export const handler = async (
         throw new ValidationError('uuid cannot be blank.');
       }
 
+      console.log('retrieve for', { uuid, vsk });
+
       // if uuid matches eth address, we try to resolve uuid from address
       if (uuid.startsWith('0x') && uuid.length === 42) {
         const identity = await identityDb.getIdentityByAddress(uuid);
 
         if (identity) {
           uuid = identity.uuid;
+          console.log('uuid sets to', uuid);
         }
       }
 
@@ -52,6 +55,7 @@ export const handler = async (
         storedVault = await vaultDb.getVaultByUuid(uuid);
       } catch (error) {
         // The stored vault was not found
+        console.log('vault was not found');
         throw incorrectUuidOrPass;
       }
 

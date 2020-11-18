@@ -149,3 +149,18 @@ functions:
         - ${ssm:space-ipfs-sg}
       subnetIds:
         - ${ssm:space-ipfs-subnet}
+  addresses:
+    memorySize: 128
+    handler: dist/addresses.handler
+    environment:
+      REGION: ${self:provider.region}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          path: /identity/addresses
+          method: GET
+          authorizer:
+            name: authorizer
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
