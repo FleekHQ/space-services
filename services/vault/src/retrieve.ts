@@ -56,7 +56,9 @@ export const handler = async (
       const vskHash = computeVskHash(vsk, uuid);
       let storedVault;
       try {
-        storedVault = await vaultDb.getVaultByUuid(uuid, type);
+        storedVault = await vaultDb
+          .getVaultByUuid(uuid, type)
+          .catch(() => vaultDb.getVaultByUuid(uuid, null));
       } catch (error) {
         // The stored vault was not found
         console.log('vault was not found');
