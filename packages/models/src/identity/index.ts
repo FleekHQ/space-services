@@ -103,7 +103,7 @@ export class IdentityModel extends BaseModel {
     // delete address record
     await this.delete(getAddressPrimaryKey(identity.address));
     // delete identity
-    await this.delete(getIdentityPrimaryKey(identity.uuid));
+    // await this.delete(getIdentityPrimaryKey(identity.uuid));
   }
 
   public async getIdentityByAddress(address: string): Promise<IdentityRecord> {
