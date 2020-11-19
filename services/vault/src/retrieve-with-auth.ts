@@ -36,9 +36,12 @@ export const handler = async (
         throw new ValidationError('uuid cannot be blank.');
       }
 
+      // @todo type
+      const type = 'password';
+
       let storedVault;
       try {
-        storedVault = await vaultDb.getVaultByUuid(uuid);
+        storedVault = await vaultDb.getVaultByUuid(uuid, type);
       } catch (error) {
         // The stored vault was not found
         throw incorrectUuidOrPass;

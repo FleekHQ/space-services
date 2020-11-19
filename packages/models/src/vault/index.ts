@@ -7,16 +7,16 @@ import { NotFoundError } from '../errors';
 
 const VAULT_KEY = 'vault';
 
-export const getVaultPrimaryKey = (uuid: string): PrimaryKey => ({
+export const getVaultPrimaryKey = (uuid: string, type: string): PrimaryKey => ({
   pk: uuid,
-  sk: VAULT_KEY,
+  sk: `${VAULT_KEY}/${type}`,
 });
 
 const mapVaultToDbObject = (vault: Vault): RawVault => {
-  const { uuid, ...rest } = vault;
+  const { uuid, type, ...rest } = vault;
 
   return {
-    ...getVaultPrimaryKey(uuid),
+    ...getVaultPrimaryKey(uuid, type),
     ...rest,
     uuid,
   };
@@ -28,6 +28,7 @@ const parseDbObjectToVault = (raw: RawVault): Vault => {
     kdfHash: raw.kdfHash,
     uuid: raw.uuid,
     createdAt: raw.createdAt,
+    type: raw.sk.split('#').pop(),
   };
 
   return vault;
@@ -47,6 +48,7 @@ export class VaultModel extends BaseModel {
       uuid: input.uuid,
       vault: input.vault,
       kdfHash: input.kdfHash,
+      type: input.type,
     };
 
     const dbItem = mapVaultToDbObject(newVault);
@@ -56,8 +58,8 @@ export class VaultModel extends BaseModel {
     return newVault;
   }
 
-  public async getVaultByUuid(uuid: string): Promise<Vault> {
-    const rawVault = await this.get(getVaultPrimaryKey(uuid)).then(
+  public async getVaultByUuid(uuid: string, type: string): Promise<Vault> {
+    const rawVault = await this.get(getVaultPrimaryKey(uuid, type)).then(
       result => result.Item as RawVault
     );
 

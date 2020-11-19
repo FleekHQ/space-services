@@ -23,7 +23,7 @@ export const handler = async (
   const result = await processRequest(
     async (): Promise<void> => {
       const request: StoreVaultRequest = JSON.parse(event.body);
-      const { vault, vsk } = request;
+      const { vault, vsk, type } = request;
       const { uuid } = event.requestContext.authorizer;
 
       if (!uuid || uuid === '') {
@@ -39,6 +39,7 @@ export const handler = async (
         // when retreiving the vault later on
         kdfHash: vsk ? computeVskHash(vsk, uuid).toString('hex') : null,
         vault,
+        type,
       });
     },
     {

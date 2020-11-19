@@ -4,9 +4,14 @@
   "type": "object",
   "title": "Store Vault",
   "required": [
-    "vault"
+    "vault", "type", "vsk"
   ],
   "properties": {
+    "type": {
+      "type": "string",
+      "title": "Vault Type",
+      "description": "Type of stored vault"
+    },
     "vault": {
       "type": "string",
       "title": "Vault File",

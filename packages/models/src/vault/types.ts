@@ -7,6 +7,9 @@ export interface CreateVaultInput {
 
   // Hash obtained by running a key derivation function on top of the client provided secret
   kdfHash?: string;
+
+  // vault type
+  type: string;
 }
 
 export interface Vault {
@@ -21,6 +24,9 @@ export interface Vault {
 
   // Date of creation in ISO format
   createdAt: string;
+
+  // vault type
+  type: string;
 }
 
 export interface RawVault {

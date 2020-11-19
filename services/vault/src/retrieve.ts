@@ -29,10 +29,14 @@ export const handler = async (
     async (): Promise<RetrieveVaultResponse> => {
       const request: RetrieveVaultRequest = JSON.parse(event.body);
       const { vsk } = request;
-      let { uuid } = event.pathParameters;
+      let { uuid, type } = event.pathParameters;
 
       if (!uuid || uuid === '') {
         throw new ValidationError('uuid cannot be blank.');
+      }
+
+      if (!type || type === '') {
+        type = 'password';
       }
 
       console.log('retrieve for', { uuid, vsk });
@@ -52,7 +56,7 @@ export const handler = async (
       const vskHash = computeVskHash(vsk, uuid);
       let storedVault;
       try {
-        storedVault = await vaultDb.getVaultByUuid(uuid);
+        storedVault = await vaultDb.getVaultByUuid(uuid, type);
       } catch (error) {
         // The stored vault was not found
         console.log('vault was not found');
