@@ -21,7 +21,11 @@ export const handler = async function(
 
   await identityDb.addEthAddress(uuid, payload);
 
-  if (payload.provider === 'email') {
+  if (
+    payload.provider === 'email' &&
+    payload.metadata &&
+    payload.metadata.email
+  ) {
     await identityDb.storeEmail(uuid, payload.metadata.email, true);
   }
 
