@@ -21,6 +21,10 @@ export const handler = async function(
 
   await identityDb.addEthAddress(uuid, payload);
 
+  if (payload.provider === 'email') {
+    await identityDb.storeEmail(uuid, payload.metadata.email, true);
+  }
+
   const response = {
     statusCode: 201,
     body: JSON.stringify({ data: 'OK' }),

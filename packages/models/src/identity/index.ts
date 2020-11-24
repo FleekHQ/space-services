@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   mapIdentityDbObject,
   mapProofDbObject,
+  mapEmailDbObject,
   parseDbObjectToIdentity,
   mapUsernameDbObject,
   mapAddressDbObject,
@@ -21,6 +22,7 @@ import {
   RawIdentityRecord,
   RawAddressRecord,
   AddressRecord,
+  EmailRecord,
 } from './types';
 import { validateIdentity } from './validations';
 import { BaseModel } from '../base';
@@ -266,6 +268,23 @@ export class IdentityModel extends BaseModel {
 
     // release old username
     await this.delete(getUsernamePrimaryKey(identity.username));
+  }
+
+  public async storeEmail(
+    uuid: string,
+    email: string,
+    verified?: boolean
+  ): Promise<EmailRecord> {
+    const obj = {
+      uuid,
+      email,
+      createdAt: new Date().toISOString(),
+      verfiedAt: verified ? new Date().toISOString() : null,
+    };
+
+    await this.put(mapEmailDbObject(obj));
+
+    return obj;
   }
 }
 

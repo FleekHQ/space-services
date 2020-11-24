@@ -7,6 +7,8 @@ import {
   RawUsernameRecord,
   RawAddressRecord,
   AddressRecord,
+  EmailRecord,
+  RawEmailRecord,
 } from './types';
 import { PrimaryKey } from '../types';
 
@@ -36,6 +38,11 @@ export const getUsernamePrimaryKey = (username: string): PrimaryKey => ({
 export const getAddressPrimaryKey = (address: string): PrimaryKey => ({
   pk: address,
   sk: `address`,
+});
+
+export const getEmailPrimaryKey = (uuid: string): PrimaryKey => ({
+  pk: uuid,
+  sk: `email`,
 });
 
 export const mapIdentityDbObject = (
@@ -117,4 +124,22 @@ export const parseDbObjectToAddress = (
   createdAt: dbObject.createdAt,
   provider: dbObject.provider || 'main',
   metadata: dbObject.metadata || null,
+});
+
+export const mapEmailDbObject = (input: EmailRecord): RawEmailRecord => {
+  return {
+    ...getEmailPrimaryKey(input.uuid),
+    createdAt: input.createdAt,
+    verifiedAt: input.verifiedAt,
+    email: input.email,
+  };
+};
+
+export const parseDbObjectToEmail = (
+  dbObject: RawEmailRecord
+): EmailRecord => ({
+  uuid: dbObject.pk,
+  email: dbObject.email,
+  createdAt: dbObject.createdAt,
+  verifiedAt: dbObject.verifiedAt || null,
 });
