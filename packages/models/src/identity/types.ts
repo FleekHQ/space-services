@@ -110,8 +110,12 @@ export interface AddressRecord {
   address: string;
   uuid: string;
   createdAt: string;
+  provider?: string;
+  metadata?: any;
 }
 
 export interface RawAddressRecord extends AppTableItem {
   createdAt: string;
+  provider: string;
+  metadata?: any;
 }

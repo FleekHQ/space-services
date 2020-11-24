@@ -1,11 +1,11 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { SignatureModel, IdentityModel, NotFoundError } from '@packages/models';
+import { SignatureModel, IdentityModel } from '@packages/models';
 import AWS from 'aws-sdk';
 import jwt from 'jsonwebtoken';
 import { defer } from 'rxjs';
 import { retryWhen, delay, take, switchMap } from 'rxjs/operators';
-import multibase from 'multibase';
-import { createTextileClient, getAPISig } from './utils';
+import EthCrypto from 'eth-crypto';
+import crypto from 'crypto';
 
 (global as any).WebSocket = require('isomorphic-ws');
 
@@ -18,6 +18,7 @@ interface TokenRequestPayload {
 interface AuthContext {
   uuid: string;
   pubkey: string;
+  address?: string;
 }
 
 const STAGE = process.env.ENV;
@@ -42,32 +43,26 @@ const sendMessageToClient = (
     })
     .promise();
 
-const findChallengeAnswer = (pubkey: string): Promise<Buffer> => {
+const findChallengeAnswer = (pubkey: string): Promise<string> => {
   const source = defer(() => sigDb.getSignatureByPublicKey(pubkey));
 
   return source
     .pipe(
       switchMap(async row => {
         await sigDb.deleteSignatureByPublicKey(row.publicKey);
-
-        try {
-          return multibase.decode(row.signature);
-        } catch (e) {
-          console.log('error on row decoding');
-          console.log(e);
-        }
-
-        return Buffer.from(row.signature, 'base64');
+        return row.signature;
       }),
       retryWhen(errors => errors.pipe(delay(1000), take(15)))
     )
     .toPromise();
 };
 
+const okStatus = { statusCode: 200, body: '' };
+
 // eslint-disable-next-line
 export const handler = async function(
   event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> {
+): Promise<void | APIGatewayProxyResult> {
   const {
     body,
     requestContext: { connectionId },
@@ -81,68 +76,73 @@ export const handler = async function(
     throw new Error('Missing pubkey param');
   }
 
-  const client = await createTextileClient();
+  console.log('pubkey', pubkey);
 
-  // Multibase (lib used by textile identities) prepends the public key with a "code"
-  // https://github.com/multiformats/js-multibase
-  const token = await client.getTokenChallenge(
+  const address = EthCrypto.publicKey.toAddress(pubkey);
+
+  console.log('address', address);
+
+  let user;
+
+  try {
+    user = await identityDb.getIdentityByAddress(address);
+  } catch (e) {
+    console.log('user was not found with this address', address);
+    await sendMessageToClient(connectionId, {
+      type: 'error',
+      value: {
+        message: `User address "${address}" was not found.`,
+      },
+    });
+    return okStatus;
+  }
+
+  const challenge = crypto.randomBytes(64).toString('hex');
+
+  const challengeEncrypted = await EthCrypto.encryptWithPublicKey(
     pubkey,
-    async (challenge: Uint8Array) => {
-      const value = Buffer.from(challenge).toJSON();
-      const challengePayload = {
-        type: 'challenge',
-        value,
-      };
-
-      // Send message to client and wait for an answer in sync
-      await sendMessageToClient(connectionId, challengePayload);
-
-      const answer = await findChallengeAnswer(pubkey);
-      return answer;
-    }
+    challenge
   );
 
-  console.log('challenge passed', {
-    pubkey,
-  });
+  const challengePayload = {
+    type: 'challenge',
+    value: EthCrypto.cipher.stringify(challengeEncrypted),
+  };
 
-  const hexPubKey = multibase
-    .decode(pubkey)
-    .toString('hex')
-    .substr(-64);
+  // Send message to client and wait for an answer in sync
+  await sendMessageToClient(connectionId, challengePayload);
 
-  const user = await identityDb.getIdentityByPublicKey(hexPubKey).catch(e => {
-    if (e instanceof NotFoundError) {
-      return identityDb.createIdentity({
-        publicKey: hexPubKey,
-      });
-    }
+  const answer = await findChallengeAnswer(pubkey);
 
-    throw e;
-  });
+  if (answer !== challenge) {
+    await sendMessageToClient(connectionId, {
+      type: 'error',
+      value: {
+        message: `Auth challenge does not match.`,
+      },
+    });
+    return okStatus;
+  }
 
   const authPayload: AuthContext = {
-    pubkey: hexPubKey,
+    pubkey,
     uuid: user.uuid,
+    address,
   };
 
   const appToken = jwt.sign(authPayload, JWT_SECRET, {
     expiresIn: '30d',
   });
 
-  const auth = await getAPISig(24 * 3600);
-
   const payload = {
-    ...auth,
-    token,
-    key: process.env.TXL_USER_KEY,
     appToken,
+    address,
   };
 
   await sendMessageToClient(connectionId, {
-    type: 'token',
+    type: 'ethToken',
     value: payload,
   });
 
-  return { statusCode: 200, body: '' };
+  return okStatus;
 };

@@ -62,7 +62,7 @@ export const handler = async function(
   const token = event.authorizationToken;
 
   if (!token) {
-    callback('Unauthorized request');
+    callback('Unauthorized');
     return;
   }
 
@@ -77,6 +77,6 @@ export const handler = async function(
       })
     );
   } catch (e) {
-    callback('Unauthorized request');
+    callback('Unauthorized');
   }
 };

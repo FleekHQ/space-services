@@ -12,11 +12,12 @@ export const validateIdentity = async (
   model: IdentityModel,
   identity: Identity
 ): Promise<void> => {
-  if (!identity.publicKey.match(/^[a-fA-F\d]{64}$/)) {
-    throw new ValidationError('Public key must be in format ^[a-fA-Fd]{64}$');
-  }
+  // if (!identity.publicKey.match(/^[a-fA-F\d]{64}$/)) {
+  //   throw new ValidationError('Public key must be in format ^[a-fA-Fd]{64}$');
+  // }
 
   let foundIdentityByAddress = true;
+
   try {
     await model.getIdentityByAddress(identity.address);
   } catch (err) {

@@ -109,6 +109,24 @@ functions:
           request:
             schema:
               application/json: ${file(schemas/createProof.json)}
+  addEthAddress:
+    memorySize: 128
+    handler: dist/addEthAddress.handler
+    environment:
+      REGION: ${self:provider.region}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          path: /add-eth-address
+          method: POST
+          authorizer:
+            name: authorizer
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
+          request:
+            schema:
+              application/json: ${file(schemas/addEthAddress.json)}
   uploadAvatar:
     memorySize: 128
     handler: dist/uploadAvatar.handler
@@ -131,3 +149,18 @@ functions:
         - ${ssm:space-ipfs-sg}
       subnetIds:
         - ${ssm:space-ipfs-subnet}
+  addresses:
+    memorySize: 128
+    handler: dist/addresses.handler
+    environment:
+      REGION: ${self:provider.region}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          path: /identity/addresses
+          method: GET
+          authorizer:
+            name: authorizer
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
