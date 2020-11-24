@@ -22,6 +22,7 @@
     "@types/coinbase-commerce-node": "^1.0.5",
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.775.0",
+    "coinbase": "^2.0.8",
     "coinbase-commerce-node": "^1.0.4",
     "lodash": "^4.17.20",
     "stripe": "^8.97.0"
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@packages/devtools": "^0.0.1",
     "@types/aws-lambda": "^8.10.56",
+    "@types/coinbase": "^2.0.5",
     "@types/node": "^12.12.21",
     "typescript": "^3.7.3"
   },

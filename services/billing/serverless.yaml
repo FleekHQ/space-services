@@ -41,7 +41,7 @@ package:
 
 functions:
   createStripeSubscription:
-    handler: dist/stripe/create-subscription.handler
+    handler: dist/stripe/createSubscription.handler
     environment:
       ENV: ${self:provider.stage}
       STRIPE_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
@@ -66,7 +66,7 @@ functions:
           cors: true
 
   cancelStripeSubscription:
-    handler: dist/stripe/cancel-subscription.handler
+    handler: dist/stripe/cancelSubscription.handler
     environment:
       ENV: ${self:provider.stage}
       STRIPE_SECRET: ${ssm:stripe-sk-${self:provider.stage}~true}
@@ -85,5 +85,16 @@ functions:
       - http:
           method: get
           path: /account
+          cors: true
+          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
+
+  getPaymentDetails:
+    handler: dist/crypto/getPaymentDetails.handler
+    environment:
+      ENV: ${self:provider.stage}
+    events:
+      - http:
+          method: get
+          path: /crypto/get-payment-details
           cors: true
           authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer

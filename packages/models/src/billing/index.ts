@@ -10,6 +10,7 @@ import stripeSubscriptionApi, {
   StripeSubscription,
   StripeSubscriptionInput,
 } from './ap/stripeSubscription';
+import walletApi, { AddWalletInput, Wallet, WalletApi } from './ap/wallet';
 
 export type AccountWithBilling = Account & {
   billingAccount: BillingAccount;
@@ -38,10 +39,10 @@ interface ModelApi {
   ) => Promise<Account>;
 }
 
-export default (env: string): ModelApi => {
+export default (env: string): ModelApi & WalletApi => {
   const db = new DbTable(`space_table_${env}`);
   const dbApi = _.extend(
-    {},
+    walletApi(db),
     accountApi(db),
     billingAccountApi(db),
     stripeCustomerApi(db),
@@ -110,6 +111,12 @@ export default (env: string): ModelApi => {
       data: UpdateAccountInput
     ): Promise<Account> => {
       return dbApi.updateAccount(accountId, data);
+    },
+    getWallet: async (address: string, currency: string): Promise<Wallet> => {
+      return dbApi.getWallet(address, currency);
+    },
+    addWallet: async (data: AddWalletInput): Promise<Wallet> => {
+      return dbApi.addWallet(data);
     },
   };
 };
