@@ -119,3 +119,16 @@ export interface RawAddressRecord extends AppTableItem {
   provider: string;
   metadata?: any;
 }
+
+export interface EmailRecord {
+  email: string;
+  uuid: string;
+  createdAt: string;
+  verifiedAt?: string;
+}
+
+export interface RawEmailRecord extends AppTableItem {
+  email: string;
+  createdAt: string;
+  verifiedAt?: string;
+}
