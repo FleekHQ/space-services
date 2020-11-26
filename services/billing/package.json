@@ -1,0 +1,36 @@
+{
+  "name": "billing",
+  "version": "0.0.1",
+  "description": "Track payments and manage credits",
+  "author": "Daniel Merrill (@dmerrill6)",
+  "license": "MIT",
+  "main": "dist/index",
+  "typings": "dist/index",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
+    "test": "jest",
+    "lint": "eslint --ext ts,js ./src"
+  },
+  "dependencies": {
+    "@packages/apitools": "^0.0.1",
+    "@packages/models": "^0.0.1",
+    "@types/coinbase-commerce-node": "^1.0.5",
+    "aws-lambda": "^1.0.6",
+    "aws-sdk": "^2.775.0",
+    "coinbase-commerce-node": "^1.0.4",
+    "lodash": "^4.17.20",
+    "stripe": "^8.97.0"
+  },
+  "devDependencies": {
+    "@packages/devtools": "^0.0.1",
+    "@types/aws-lambda": "^8.10.56",
+    "@types/node": "^12.12.21",
+    "typescript": "^3.7.3"
+  },
+  "private": true
+}
