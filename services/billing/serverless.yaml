@@ -87,3 +87,25 @@ functions:
           path: /account
           cors: true
           authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
+
+  getUsage:
+    handler: dist/usage.handler
+    environment:
+      ENV: ${self:provider.stage}
+    events:
+      - http:
+          method: get
+          path: /account/usage
+          cors: true
+          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
+
+  getUsageHistory:
+    handler: dist/usageHistory.handler
+    environment:
+      ENV: ${self:provider.stage}
+    events:
+      - http:
+          method: get
+          path: /account/usage-history
+          cors: true
+          authorizer: arn:aws:lambda:${self:provider.region}:${ssm:org-arn}:function:space-rest-${self:provider.stage}-authorizer
