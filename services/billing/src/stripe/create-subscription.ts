@@ -11,7 +11,7 @@ const stripe = createStripe();
 
 interface CreateStripeSubscriptionPayload {
   paymentMethodId: string;
-  priceId: string;
+  priceId?: string;
   email: string;
   username: string;
 }
@@ -29,6 +29,8 @@ export const handler = async function(
 
   let stripeCustomerId;
   let stripeCustomer;
+
+  const priceId = payload.priceId || 'space_pro';
 
   // if user already have billing account & stripe id
   if (account.billingAccount && account.billingAccount.stripeCustomerId) {
@@ -103,7 +105,7 @@ export const handler = async function(
   // Create the subscription
   const subscription = await stripe.subscriptions.create({
     customer: stripeCustomerId,
-    items: [{ price: payload.priceId }],
+    items: [{ price: priceId }],
     expand: ['latest_invoice.payment_intent'],
   });
 
@@ -112,7 +114,7 @@ export const handler = async function(
     id: subscription.id,
     accountId: account.id,
     stripeCustomerId,
-    priceId: payload.priceId,
+    priceId,
     billingAccountId: account.billingAccountId,
   });
 
