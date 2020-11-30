@@ -51,7 +51,7 @@ const findChallengeAnswer = (pubkey: string): Promise<Buffer> => {
         await sigDb.deleteSignatureByPublicKey(row.publicKey);
 
         try {
-          return multibase.decode(row.signature);
+          return Buffer.from(multibase.decode(row.signature));
         } catch (e) {
           console.log('error on row decoding');
           console.log(e);
@@ -94,10 +94,17 @@ export const handler = async function(
         value,
       };
 
+      console.log('Got challenge', challenge);
+
       // Send message to client and wait for an answer in sync
       await sendMessageToClient(connectionId, challengePayload);
 
+      console.log('sent challenge to client');
+
       const answer = await findChallengeAnswer(pubkey);
+
+      console.log('received back challenge answer', answer);
+
       return answer;
     }
   );
@@ -106,8 +113,7 @@ export const handler = async function(
     pubkey,
   });
 
-  const hexPubKey = multibase
-    .decode(pubkey)
+  const hexPubKey = Buffer.from(multibase.decode(pubkey))
     .toString('hex')
     .substr(-64);
 
