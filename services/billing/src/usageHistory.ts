@@ -21,13 +21,19 @@ export const handler = async (
 
   console.log(uuid);
 
+  const mockData = [];
+  const now = Date.now();
+  const day = 24 * 60 * 60 * 1000;
+
+  for (let i = 0; i < 30; i += 1) {
+    mockData.push({
+      date: new Date(now - i * day).toISOString(),
+      usage: Math.ceil(Math.random() * 1000000000),
+    });
+  }
+
   return {
     statusCode: 200,
-    body: JSON.stringify([
-      {
-        date: new Date().toISOString(),
-        storage: Math.random() * 100000000,
-      },
-    ]),
+    body: JSON.stringify(mockData),
   };
 };

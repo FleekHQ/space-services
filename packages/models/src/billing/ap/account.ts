@@ -14,6 +14,11 @@ export enum BillingMode {
   STRIPE = 'stripe',
 }
 
+const freeQuotas = {
+  [AccountPlan.BASIC]: 1000000000, // 1 GB
+  [AccountPlan.PRO]: 100000000000, // 100 GB
+};
+
 export interface Account {
   id: string;
   credits: number;
@@ -29,6 +34,7 @@ export interface Account {
   billingPeriodEnd?: string;
   stripeSubscriptionId?: string;
   billingMode?: BillingMode;
+  freeUsageQuota?: number;
 }
 
 interface RawInfo {
@@ -45,6 +51,7 @@ interface RawInfo {
   billingPeriodEnd?: string;
   stripeSubscriptionId?: string;
   billingMode?: BillingMode;
+  freeUsageQuota?: number;
 }
 
 interface CreateAccountInput {
@@ -90,6 +97,7 @@ const rawToObject = (raw: RawInfo): Account => {
   return {
     id: pk,
     ...rest,
+    freeUsageQuota: raw.freeUsageQuota || freeQuotas[raw.plan],
   };
 };
 

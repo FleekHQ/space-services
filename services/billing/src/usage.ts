@@ -24,8 +24,8 @@ export const handler = async (
   return {
     statusCode: 200,
     body: JSON.stringify({
-      storage: Math.random() * 100000000,
-      bandwidth: Math.random() * 1000000,
+      storage: Math.ceil(Math.random() * 1000000000),
+      bandwidth: Math.ceil(Math.random() * 10000000),
     }),
   };
 };
