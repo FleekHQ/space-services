@@ -13,4 +13,5 @@ export const accountResponse = (accountWithBilling: AccountWithBilling) =>
     'billingPeriodStart',
     'billingPeriodEnd',
     'billingMode',
+    'freeUsageQuota',
   ]);
