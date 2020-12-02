@@ -19,7 +19,14 @@ export const handler = async function(
 
   const payload: AddEthAddress = JSON.parse(event.body);
 
-  await identityDb.addEthAddress(uuid, payload);
+  try {
+    await identityDb.addEthAddress(uuid, payload);
+  } catch (e) {
+    return {
+      statusCode: 409,
+      body: JSON.stringify({ error: 'Already in use.' }),
+    };
+  }
 
   if (
     payload.provider === 'email' &&

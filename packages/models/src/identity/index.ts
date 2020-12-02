@@ -211,6 +211,15 @@ export class IdentityModel extends BaseModel {
   ): Promise<AddressRecord> {
     const { address, provider, metadata } = payload;
 
+    // prevent adding same address multiple times
+    const exists = await this.getIdentityByAddress(address)
+      .then(() => true)
+      .catch(() => false);
+
+    if (exists) {
+      throw new Error('Address is already in use.');
+    }
+
     const obj = {
       uuid,
       address,
