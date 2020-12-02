@@ -14,9 +14,11 @@ export enum BillingMode {
   STRIPE = 'stripe',
 }
 
+const GiB = 1024 * 1024 * 1024;
+
 const freeQuotas = {
-  [AccountPlan.BASIC]: 1000000000, // 1 GB
-  [AccountPlan.PRO]: 100000000000, // 100 GB
+  [AccountPlan.BASIC]: GiB, // 1 GiB
+  [AccountPlan.PRO]: 100 * GiB, // 100 GiB
 };
 
 export interface Account {
