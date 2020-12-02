@@ -28,16 +28,14 @@ export const handler = async (
   const result = await processRequest(
     async (): Promise<RetrieveVaultResponse> => {
       const request: RetrieveVaultRequest = JSON.parse(event.body);
-      const { vsk } = request;
-      let { uuid, type } = event.pathParameters;
+      const { vsk, type: requestType } = request;
+      let { uuid } = event.pathParameters;
 
       if (!uuid || uuid === '') {
         throw new ValidationError('uuid cannot be blank.');
       }
 
-      if (!type || type === '') {
-        type = 'password';
-      }
+      const type = requestType ? requestType : 'password';
 
       console.log('retrieve for', { uuid, vsk });
 

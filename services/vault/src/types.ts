@@ -10,6 +10,9 @@ export interface StoreVaultRequest {
 }
 
 export interface RetrieveVaultRequest {
+  // vault type
+  type: string;
+
   // Vault service key
   vsk: string;
 }
