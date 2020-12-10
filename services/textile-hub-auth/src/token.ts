@@ -12,6 +12,7 @@ import { createTextileClient, getAPISig } from './utils';
 interface TokenRequestPayload {
   data: {
     pubkey: string;
+    version?: number;
   };
 }
 
@@ -74,7 +75,7 @@ export const handler = async function(
   } = event;
 
   const {
-    data: { pubkey },
+    data: { pubkey, version },
   } = JSON.parse(body) as TokenRequestPayload;
 
   if (!pubkey) {
@@ -138,12 +139,22 @@ export const handler = async function(
 
   const auth = await getAPISig(24 * 3600);
 
-  const payload = {
+  const storageAuth = {
     ...auth,
     token,
     key: process.env.TXL_USER_KEY,
-    appToken,
   };
+
+  let payload;
+
+  if (version && version === 2) {
+    payload = {
+      token: appToken,
+      storageAuth,
+    };
+  } else {
+    payload = { ...storageAuth, appToken };
+  }
 
   await sendMessageToClient(connectionId, {
     type: 'token',
