@@ -19,6 +19,8 @@
   "dependencies": {
     "@packages/apitools": "^0.0.1",
     "@packages/models": "^0.0.1",
+    "@textile/context": "^0.9.2",
+    "@textile/users": "^4.0.0",
     "@types/coinbase-commerce-node": "^1.0.5",
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.775.0",
