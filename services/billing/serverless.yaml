@@ -17,27 +17,28 @@ provider:
       Resource:
         - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
         - Fn::Join:
-          - ""
-          - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
-            - "/*"
+            - ''
+            - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
+              - '/*'
     - Effect: Allow
       Action:
         - execute-api:ManageConnections
       Resource:
-        - "arn:aws:execute-api:${self:provider.region}:${ssm:org-arn}:${self:provider.executeApi.${self:provider.stage}}/${opt:stage}/*"
+        - 'arn:aws:execute-api:${self:provider.region}:${ssm:org-arn}:${self:provider.executeApi.${self:provider.stage}}/${opt:stage}/*'
   executeApi:
     dev: 413h5xnqp8
+    prd: 413h5xnqp8
 
 plugins:
   - serverless-jetpack
 
 custom:
   jetpack:
-    base: "../../"
+    base: '../../'
 
 package:
   exclude:
-    - "**/node_modules/aws-sdk/**" # included on Lambda.
+    - '**/node_modules/aws-sdk/**' # included on Lambda.
 
 functions:
   createStripeSubscription:
@@ -92,6 +93,9 @@ functions:
     handler: dist/usage.handler
     environment:
       ENV: ${self:provider.stage}
+      TXL_USER_KEY: ${ssm:txl-user-key-${self:provider.stage}~true}
+      TXL_USER_SECRET: ${ssm:txl-user-secret-${self:provider.stage}~true}
+      TXL_HUB_URL: ${ssm:txl-hub-url-${self:provider.stage}~true}
     events:
       - http:
           method: get
@@ -103,6 +107,9 @@ functions:
     handler: dist/usageHistory.handler
     environment:
       ENV: ${self:provider.stage}
+      TXL_USER_KEY: ${ssm:txl-user-key-${self:provider.stage}~true}
+      TXL_USER_SECRET: ${ssm:txl-user-secret-${self:provider.stage}~true}
+      TXL_HUB_URL: ${ssm:txl-hub-url-${self:provider.stage}~true}
     events:
       - http:
           method: get
