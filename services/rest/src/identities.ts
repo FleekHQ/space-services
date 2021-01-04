@@ -1,6 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import { APIGatewayProxyEventBase, APIGatewayProxyResult } from 'aws-lambda';
 import { IdentityModel } from '@packages/models';
+import middy from '@middy/core';
+import cors from '@middy/http-cors';
 import { AuthContext } from './authorizer';
 
 const STAGE = process.env.ENV;
@@ -12,7 +14,7 @@ const queryBy = {
 };
 
 // eslint-disable-next-line
-export const handler = async function(
+export const handler = middy(async function(
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> {
   const { address, username } = event.queryStringParameters;
@@ -62,4 +64,4 @@ export const handler = async function(
   };
 
   return response;
-};
+}).use(cors());

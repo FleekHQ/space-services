@@ -17,6 +17,8 @@
     "lint": "eslint --ext ts,js ./src"
   },
   "dependencies": {
+    "@middy/core": "^1.5.0",
+    "@middy/http-cors": "^1.5.0",
     "@packages/apitools": "^0.0.1",
     "@packages/crypto": "^0.0.1",
     "@packages/models": "^0.0.1",

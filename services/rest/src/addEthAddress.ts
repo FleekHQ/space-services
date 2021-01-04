@@ -1,5 +1,7 @@
 import { APIGatewayProxyEventBase, APIGatewayProxyResult } from 'aws-lambda';
 import { IdentityModel } from '@packages/models';
+import middy from '@middy/core';
+import cors from '@middy/http-cors';
 import { AuthContext } from './authorizer';
 
 const STAGE = process.env.ENV;
@@ -12,7 +14,7 @@ interface AddEthAddress {
 }
 
 // eslint-disable-next-line
-export const handler = async function(
+export const handler = middy(async function(
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> {
   const { uuid } = event.requestContext.authorizer;
@@ -42,4 +44,4 @@ export const handler = async function(
   };
 
   return response;
-};
+}).use(cors());

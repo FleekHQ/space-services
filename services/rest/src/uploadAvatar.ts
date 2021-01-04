@@ -1,6 +1,8 @@
 import { APIGatewayProxyEventBase, APIGatewayProxyResult } from 'aws-lambda';
 import { IdentityModel } from '@packages/models';
 import buildIpfsClient from 'ipfs-http-client';
+import middy from '@middy/core';
+import cors from '@middy/http-cors';
 import { AuthContext } from './authorizer';
 
 const STAGE = process.env.ENV;
@@ -12,7 +14,7 @@ const ipfsClient = buildIpfsClient({
 });
 
 // eslint-disable-next-line
-export const handler = async function(
+export const handler = middy(async function(
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> {
   const { uuid } = event.requestContext.authorizer;
@@ -37,4 +39,4 @@ export const handler = async function(
       body: JSON.stringify({ error: 'Internal server error' }),
     };
   }
-};
+}).use(cors());
