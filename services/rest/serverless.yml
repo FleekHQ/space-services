@@ -18,9 +18,9 @@ provider:
       Resource:
         - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
         - Fn::Join:
-          - ""
-          - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
-            - "/*"
+            - ''
+            - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
+              - '/*'
   domain:
     dev: api-dev.space.storage
     stg: api-stg.space.storage
@@ -32,7 +32,7 @@ plugins:
 
 custom:
   jetpack:
-    base: "../../"
+    base: '../../'
   customDomain:
     domainName: ${self:provider.domain.${self:provider.stage}}
     certificateArn: ${ssm:space-api-edge-certificate-arn}
@@ -41,7 +41,7 @@ custom:
     createRoute53Record: false
 package:
   exclude:
-    - "**/node_modules/aws-sdk/**" # included on Lambda.
+    - '**/node_modules/aws-sdk/**' # included on Lambda.
 
 functions:
   authorizer:
@@ -57,6 +57,7 @@ functions:
       - http:
           path: /identities
           method: GET
+          cors: true
 
   updateIdentity:
     memorySize: 128
@@ -68,6 +69,7 @@ functions:
       - http:
           path: /identity
           method: PUT
+          cors: true
           authorizer:
             name: authorizer
             identitySource: method.request.header.Authorization
@@ -86,6 +88,7 @@ functions:
       - http:
           path: /identity
           method: DELETE
+          cors: true
           authorizer:
             name: authorizer
             identitySource: method.request.header.Authorization
@@ -101,6 +104,7 @@ functions:
       - http:
           path: /identity/proofs
           method: POST
+          cors: true
           authorizer:
             name: authorizer
             identitySource: method.request.header.Authorization
@@ -119,6 +123,7 @@ functions:
       - http:
           path: /add-eth-address
           method: POST
+          cors: true
           authorizer:
             name: authorizer
             identitySource: method.request.header.Authorization
@@ -138,6 +143,7 @@ functions:
       - http:
           path: /identity/avatar
           method: POST
+          cors: true
           authorizer:
             name: authorizer
             identitySource: method.request.header.Authorization
@@ -159,8 +165,21 @@ functions:
       - http:
           path: /identity/addresses
           method: GET
+          cors: true
           authorizer:
             name: authorizer
             identitySource: method.request.header.Authorization
             type: token
             resultTtlInSeconds: 0
+
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
