@@ -109,7 +109,7 @@ export class IdentityModel extends BaseModel {
       TableName: this.table,
       KeyConditionExpression,
       ExpressionAttributeValues,
-      IndexName: 'gs1',
+      IndexName: 'displayName-index',
     };
 
     const result = await this.query(params);
