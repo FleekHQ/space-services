@@ -14,7 +14,7 @@ const queryBy = {
   email: (str: string) => identityDb.getIdentityByEmail(str),
 };
 
-declare type FilterKey = 'address' | 'email' | 'username';
+type FilterKey = 'address' | 'email' | 'username';
 
 // eslint-disable-next-line
 export const handler = middy(async function(
