@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult, APIGatewayProxyEventBase } from 'aws-lambda';
-import createDbModel from '@packages/models/dist/billing/dbModel';
+import createDbModel from '@packages/models/dist/billing';
 import { accountResponse } from './utils/responses';
 
 if (!process?.env?.ENV) {

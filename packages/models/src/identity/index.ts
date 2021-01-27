@@ -23,6 +23,8 @@ import {
   RawAddressRecord,
   AddressRecord,
   EmailRecord,
+  GetIdentitiesQuery,
+  GetIdentityQueryType,
 } from './types';
 import { validateIdentity } from './validations';
 import { BaseModel } from '../base';
@@ -94,6 +96,27 @@ export class IdentityModel extends BaseModel {
     return newProof;
   }
 
+  public async getIdentitiesByDisplayName(
+    dn: string
+  ): Promise<IdentityRecord[]> {
+    const KeyConditionExpression: DocumentClient.KeyExpression =
+      'pk = :displayName';
+    const ExpressionAttributeValues: DocumentClient.ExpressionAttributeValueMap = {
+      ':displayName': `${dn}`,
+    };
+
+    const params = {
+      TableName: this.table,
+      KeyConditionExpression,
+      ExpressionAttributeValues,
+      IndexName: 'displayName-index',
+    };
+
+    const result = await this.query(params);
+
+    return result.Items.map(parseDbObjectToIdentity);
+  }
+
   public async getIdentityByUuid(uuid: string): Promise<IdentityRecord> {
     const rawIdentity = await this.get(getIdentityPrimaryKey(uuid)).then(
       result => result.Item as RawIdentityRecord
@@ -150,6 +173,14 @@ export class IdentityModel extends BaseModel {
 
     const record = parseDbObjectToUsername(rawUsername);
     return this.getIdentityByUuid(record.uuid);
+  }
+
+  public async getIdentityByEmail(email: string): Promise<IdentityRecord> {
+    const { uuid } = await this.get(this.getIdentityByEmail(email)).then(
+      result => result.Item as EmailRecord
+    );
+
+    return this.getIdentityByUuid(uuid);
   }
 
   public async updateIdentity(
@@ -294,6 +325,38 @@ export class IdentityModel extends BaseModel {
     await this.put(mapEmailDbObject(obj));
 
     return obj;
+  }
+
+  public async getIdentities(
+    query: GetIdentitiesQuery[]
+  ): Promise<IdentityRecord[]> {
+    let ps: Promise<IdentityRecord>[];
+    let dpp: Promise<IdentityRecord[]>[];
+
+    query.forEach(q => {
+      if (q.type === GetIdentityQueryType.username) {
+        ps.push(this.getIdentityByUsername(q.value));
+      }
+      if (q.type === GetIdentityQueryType.email) {
+        ps.push(this.getIdentityByEmail(q.value));
+      }
+      if (q.type === GetIdentityQueryType.displayName) {
+        dpp.push(this.getIdentitiesByDisplayName(q.value));
+      }
+
+      throw new Error('Incompatible query type');
+    });
+
+    const results = await Promise.all(ps);
+    const dpResults = await Promise.all(dpp);
+
+    if (dpResults.length > 0) {
+      dpResults.forEach(a => {
+        results.concat(a);
+      });
+    }
+
+    return results;
   }
 }
 

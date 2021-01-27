@@ -128,7 +128,18 @@ export interface EmailRecord {
 }
 
 export interface RawEmailRecord extends AppTableItem {
-  email: string;
+  uuid: string;
   createdAt: string;
   verifiedAt?: string;
+}
+
+export enum GetIdentityQueryType {
+  username = 'username',
+  email = 'email',
+  displayName = 'displayName',
+}
+
+export interface GetIdentitiesQuery {
+  type: GetIdentityQueryType;
+  value: string;
 }

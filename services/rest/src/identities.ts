@@ -11,25 +11,37 @@ const identityDb = new IdentityModel(STAGE);
 const queryBy = {
   address: (str: string) => identityDb.getIdentityByAddress(str),
   username: (str: string) => identityDb.getIdentityByUsername(str),
+  email: (str: string) => identityDb.getIdentityByEmail(str),
 };
+
+type FilterKey = 'address' | 'email' | 'username';
 
 // eslint-disable-next-line
 export const handler = middy(async function(
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> {
-  const { address, username } = event.queryStringParameters;
+  const { address, username, email } = event.queryStringParameters;
 
-  if (!address && !username) {
+  if (!address && !username && !email) {
     return {
       statusCode: 403,
       body: JSON.stringify({
         error:
-          'You need to use "address" or "username" as query string parameter.',
+          'You need to use "address" or "username" or "email" as query string parameter.',
       }),
     };
   }
 
-  const filterKey = address ? 'address' : 'username';
+  let filterKey: FilterKey;
+
+  if (address) {
+    filterKey = 'address';
+  } else if (username) {
+    filterKey = 'username';
+  } else {
+    filterKey = 'email';
+  }
+
   const values = event.queryStringParameters[filterKey].split(',');
 
   if (values.length > 20) {
