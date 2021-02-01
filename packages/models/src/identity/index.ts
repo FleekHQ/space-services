@@ -13,6 +13,7 @@ import {
   getIdentityPrimaryKey,
   getUsernamePrimaryKey,
   parseDbObjectToUsername,
+  getEmailPrimaryKey,
 } from './access-patterns';
 import {
   CreateIdentityInput,
@@ -176,7 +177,7 @@ export class IdentityModel extends BaseModel {
   }
 
   public async getIdentityByEmail(email: string): Promise<IdentityRecord> {
-    const { uuid } = await this.get(this.getIdentityByEmail(email)).then(
+    const { uuid } = await this.get(getEmailPrimaryKey(email)).then(
       result => result.Item as EmailRecord
     );
 
