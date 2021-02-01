@@ -188,16 +188,16 @@ export class IdentityModel extends BaseModel {
     uuid: string,
     payload: Record<string, any>
   ): Promise<IdentityRecord> {
+    let id: IdentityRecord;
     // if email is present and already exists, throw an error
     try {
-      const id = await this.getIdentityByEmail(payload.email);
-
-      if (id) {
-        throw new Error('Email already used');
-      }
+      id = await this.getIdentityByEmail(payload.email);
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log('Email is not taken, allowed to use');
+      throw new Error(`Unable to fetch by email: ${err.message}`);
+    }
+
+    if (id) {
+      throw new Error('Email already used');
     }
 
     // check that identity exists
