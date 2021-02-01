@@ -14,6 +14,7 @@ import {
   getUsernamePrimaryKey,
   parseDbObjectToUsername,
   getEmailPrimaryKey,
+  parseDbObjectToEmail,
 } from './access-patterns';
 import {
   CreateIdentityInput,
@@ -22,6 +23,7 @@ import {
   ProofRecord,
   RawIdentityRecord,
   RawAddressRecord,
+  RawEmailRecord,
   AddressRecord,
   EmailRecord,
   GetIdentitiesQuery,
@@ -177,9 +179,15 @@ export class IdentityModel extends BaseModel {
   }
 
   public async getIdentityByEmail(email: string): Promise<IdentityRecord> {
-    const { uuid } = await this.get(getEmailPrimaryKey(email)).then(
-      result => result.Item as EmailRecord
+    const rawEmail = await this.get(getEmailPrimaryKey(email)).then(
+      result => result.Item as RawEmailRecord
     );
+
+    if (!rawEmail) {
+      throw new NotFoundError(`Email ${email} not found.`);
+    }
+
+    const { uuid } = parseDbObjectToEmail(rawEmail);
 
     return this.getIdentityByUuid(uuid);
   }
