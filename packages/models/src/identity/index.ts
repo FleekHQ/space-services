@@ -30,7 +30,7 @@ import { validateIdentity } from './validations';
 import { BaseModel } from '../base';
 import { NotFoundError, ValidationError } from '../errors';
 
-const allowedIdentityKeys = ['displayName', 'avatarUrl', 'username'];
+const allowedIdentityKeys = ['displayName', 'avatarUrl', 'username', 'email'];
 
 interface AddEthAddressPayload {
   address: string;
