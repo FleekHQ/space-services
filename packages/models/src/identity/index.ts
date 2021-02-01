@@ -193,11 +193,13 @@ export class IdentityModel extends BaseModel {
     try {
       id = await this.getIdentityByEmail(payload.email);
     } catch (err) {
-      throw new Error(`Unable to fetch by email: ${err.message}`);
+      if (!(err instanceof NotFoundError)) {
+        throw new Error(`Unable to fetch by email: ${err.message}`);
+      }
     }
 
     if (id) {
-      throw new Error('Email already used');
+      throw new ValidationError('Email already used');
     }
 
     // check that identity exists
