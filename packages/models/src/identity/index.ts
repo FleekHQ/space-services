@@ -13,6 +13,8 @@ import {
   getIdentityPrimaryKey,
   getUsernamePrimaryKey,
   parseDbObjectToUsername,
+  getEmailPrimaryKey,
+  parseDbObjectToEmail,
 } from './access-patterns';
 import {
   CreateIdentityInput,
@@ -21,6 +23,7 @@ import {
   ProofRecord,
   RawIdentityRecord,
   RawAddressRecord,
+  RawEmailRecord,
   AddressRecord,
   EmailRecord,
   GetIdentitiesQuery,
@@ -30,7 +33,7 @@ import { validateIdentity } from './validations';
 import { BaseModel } from '../base';
 import { NotFoundError, ValidationError } from '../errors';
 
-const allowedIdentityKeys = ['displayName', 'avatarUrl', 'username'];
+const allowedIdentityKeys = ['displayName', 'avatarUrl', 'username', 'email'];
 
 interface AddEthAddressPayload {
   address: string;
@@ -176,9 +179,15 @@ export class IdentityModel extends BaseModel {
   }
 
   public async getIdentityByEmail(email: string): Promise<IdentityRecord> {
-    const { uuid } = await this.get(this.getIdentityByEmail(email)).then(
-      result => result.Item as EmailRecord
+    const rawEmail = await this.get(getEmailPrimaryKey(email)).then(
+      result => result.Item as RawEmailRecord
     );
+
+    if (!rawEmail) {
+      throw new NotFoundError(`Email ${email} not found.`);
+    }
+
+    const { uuid } = parseDbObjectToEmail(rawEmail);
 
     return this.getIdentityByUuid(uuid);
   }
@@ -187,16 +196,18 @@ export class IdentityModel extends BaseModel {
     uuid: string,
     payload: Record<string, any>
   ): Promise<IdentityRecord> {
+    let id: IdentityRecord;
     // if email is present and already exists, throw an error
     try {
-      const id = await this.getIdentityByEmail(payload.email);
-
-      if (id) {
-        throw new Error('Email already used');
-      }
+      id = await this.getIdentityByEmail(payload.email);
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log('Email is not taken, allowed to use');
+      if (!(err instanceof NotFoundError)) {
+        throw new Error(`Unable to fetch by email: ${err.message}`);
+      }
+    }
+
+    if (id) {
+      throw new ValidationError('Email already used');
     }
 
     // check that identity exists
