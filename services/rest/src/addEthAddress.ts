@@ -13,6 +13,8 @@ interface AddEthAddress {
   metadata: any;
 }
 
+const PROVIDERS_WITH_EMAIL = ['email', 'google', 'twitter'];
+
 // eslint-disable-next-line
 export const handler = middy(async function(
   event: APIGatewayProxyEventBase<AuthContext>
@@ -31,7 +33,7 @@ export const handler = middy(async function(
   }
 
   if (
-    payload.provider === 'email' &&
+    PROVIDERS_WITH_EMAIL.includes(payload.provider) &&
     payload.metadata &&
     payload.metadata.email
   ) {
