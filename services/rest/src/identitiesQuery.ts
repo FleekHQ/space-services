@@ -8,8 +8,6 @@ import { AuthContext } from './authorizer';
 const STAGE = process.env.ENV;
 const identityDb = new IdentityModel(STAGE);
 
-declare type FilterKey = 'address' | 'email' | 'username';
-
 // eslint-disable-next-line
 export const handler = middy(async function(
   event: APIGatewayProxyEventBase<AuthContext>
