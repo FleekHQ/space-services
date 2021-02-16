@@ -4,6 +4,8 @@ import middy from '@middy/core';
 import cors from '@middy/http-cors';
 import AWS from 'aws-sdk';
 import { AuthContext } from './authorizer';
+import render from './emails';
+import { EmailBody } from './emails/emailTypes';
 
 const STAGE = process.env.ENV;
 const identityDb = new IdentityModel(STAGE);
@@ -14,7 +16,16 @@ const ses = new AWS.SES({ region: 'us-west-2' });
 export const handler = middy(async function(
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> {
-  const { uuid } = event.requestContext.authorizer;
+  const { mail } = JSON.parse(event.body);
+
+  const emailBody: EmailBody = render(mail);
+
+  let ToAddresses;
+  if (Array.isArray(mail.toAddresses)) {
+    ToAddresses = mail.toAddresses;
+  } else {
+    ToAddresses = [mail.toAddresses];
+  }
 
   const params: AWS.SES.SendEmailRequest = {
     Destination: {
@@ -29,7 +40,7 @@ export const handler = middy(async function(
       },
       Subject: { Data: emailBody.subject },
     },
-    Source: emailBody.from || 'Fleek <hi@fleek.co>',
+    Source: emailBody.from || 'Space <hi@space.storage>',
   };
 
   try {
