@@ -13,6 +13,8 @@ import {
   getIdentityPrimaryKey,
   getUsernamePrimaryKey,
   parseDbObjectToUsername,
+  getEmailPrimaryKey,
+  parseDbObjectToEmail,
 } from './access-patterns';
 import {
   CreateIdentityInput,
@@ -21,14 +23,17 @@ import {
   ProofRecord,
   RawIdentityRecord,
   RawAddressRecord,
+  RawEmailRecord,
   AddressRecord,
   EmailRecord,
+  GetIdentitiesQuery,
+  GetIdentityQueryType,
 } from './types';
 import { validateIdentity } from './validations';
 import { BaseModel } from '../base';
 import { NotFoundError, ValidationError } from '../errors';
 
-const allowedIdentityKeys = ['displayName', 'avatarUrl', 'username'];
+const allowedIdentityKeys = ['displayName', 'avatarUrl', 'username', 'email'];
 
 interface AddEthAddressPayload {
   address: string;
@@ -94,6 +99,27 @@ export class IdentityModel extends BaseModel {
     return newProof;
   }
 
+  public async getIdentitiesByDisplayName(
+    dn: string
+  ): Promise<IdentityRecord[]> {
+    const KeyConditionExpression: DocumentClient.KeyExpression =
+      'displayName = :name';
+    const ExpressionAttributeValues: DocumentClient.ExpressionAttributeValueMap = {
+      ':name': `${dn}`,
+    };
+
+    const params = {
+      TableName: this.table,
+      KeyConditionExpression,
+      ExpressionAttributeValues,
+      IndexName: 'displayName-index',
+    };
+
+    const result = await this.query(params);
+
+    return result.Items.map(parseDbObjectToIdentity);
+  }
+
   public async getIdentityByUuid(uuid: string): Promise<IdentityRecord> {
     const rawIdentity = await this.get(getIdentityPrimaryKey(uuid)).then(
       result => result.Item as RawIdentityRecord
@@ -152,10 +178,38 @@ export class IdentityModel extends BaseModel {
     return this.getIdentityByUuid(record.uuid);
   }
 
+  public async getIdentityByEmail(email: string): Promise<IdentityRecord> {
+    const rawEmail = await this.get(getEmailPrimaryKey(email)).then(
+      result => result.Item as RawEmailRecord
+    );
+
+    if (!rawEmail) {
+      throw new NotFoundError(`Email ${email} not found.`);
+    }
+
+    const { uuid } = parseDbObjectToEmail(rawEmail);
+
+    return this.getIdentityByUuid(uuid);
+  }
+
   public async updateIdentity(
     uuid: string,
     payload: Record<string, any>
   ): Promise<IdentityRecord> {
+    let id: IdentityRecord;
+    // if email is present and already exists, throw an error
+    try {
+      id = await this.getIdentityByEmail(payload.email);
+    } catch (err) {
+      if (!(err instanceof NotFoundError)) {
+        throw new Error(`Unable to fetch by email: ${err.message}`);
+      }
+    }
+
+    if (id) {
+      throw new ValidationError('Email already used');
+    }
+
     // check that identity exists
     await this.getIdentityByUuid(uuid);
 
@@ -294,6 +348,41 @@ export class IdentityModel extends BaseModel {
     await this.put(mapEmailDbObject(obj));
 
     return obj;
+  }
+
+  public async getIdentities(
+    query: GetIdentitiesQuery[]
+  ): Promise<IdentityRecord[]> {
+    const ps: Promise<IdentityRecord>[] = [];
+    const dpp: Promise<IdentityRecord[]>[] = [];
+
+    query.forEach(q => {
+      if (q.type === GetIdentityQueryType.username) {
+        ps.push(this.getIdentityByUsername(q.value));
+        return;
+      }
+      if (q.type === GetIdentityQueryType.email) {
+        ps.push(this.getIdentityByEmail(q.value));
+        return;
+      }
+      if (q.type === GetIdentityQueryType.displayName) {
+        dpp.push(this.getIdentitiesByDisplayName(q.value));
+        return;
+      }
+
+      throw new Error('Incompatible query type');
+    });
+
+    const results = await Promise.all(ps);
+    const dpResults = await Promise.all(dpp);
+
+    if (dpResults.length > 0) {
+      dpResults.forEach(a => {
+        results.concat(a);
+      });
+    }
+
+    return results;
   }
 }
 

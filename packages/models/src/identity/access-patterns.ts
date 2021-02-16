@@ -40,8 +40,8 @@ export const getAddressPrimaryKey = (address: string): PrimaryKey => ({
   sk: `address`,
 });
 
-export const getEmailPrimaryKey = (uuid: string): PrimaryKey => ({
-  pk: uuid,
+export const getEmailPrimaryKey = (email: string): PrimaryKey => ({
+  pk: `email#${email}`,
   sk: `email`,
 });
 
@@ -128,18 +128,18 @@ export const parseDbObjectToAddress = (
 
 export const mapEmailDbObject = (input: EmailRecord): RawEmailRecord => {
   return {
-    ...getEmailPrimaryKey(input.uuid),
+    ...getEmailPrimaryKey(input.email),
     createdAt: input.createdAt,
     verifiedAt: input.verifiedAt,
-    email: input.email,
+    uuid: input.uuid,
   };
 };
 
 export const parseDbObjectToEmail = (
   dbObject: RawEmailRecord
 ): EmailRecord => ({
-  uuid: dbObject.pk,
-  email: dbObject.email,
+  email: dbObject.pk,
+  uuid: dbObject.uuid,
   createdAt: dbObject.createdAt,
   verifiedAt: dbObject.verifiedAt || null,
 });

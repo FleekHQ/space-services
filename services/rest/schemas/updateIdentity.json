@@ -21,6 +21,11 @@
     "avatarUrl": {
       "type": "string",
       "title": "Avatar URL"
+    },
+    "email": {
+      "type": "string",
+      "title": "Email address",
+      "description": "Email address"
     }
   }
 }

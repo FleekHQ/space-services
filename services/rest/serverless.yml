@@ -64,6 +64,16 @@ functions:
           method: GET
           cors: true
 
+  identitiesQuery:
+    handler: dist/identitiesQuery.handler
+    environment:
+      ENV: ${self:provider.stage}
+    events:
+      - http:
+          path: /identities_query
+          method: POST
+          cors: true
+
   updateIdentity:
     memorySize: 128
     handler: dist/updateIdentity.handler
