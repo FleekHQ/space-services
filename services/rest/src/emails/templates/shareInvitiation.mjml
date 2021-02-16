@@ -1,0 +1,30 @@
+<mjml>
+  <mj-body background-color="#FFFFFF">
+    <mj-section text-align="left">
+      <mj-column>
+        <mj-image href="https://space.storage" align="left" border="none" padding="10px 25px" src="https://space.storage/images/Space.svg" target="_blank" title="" width="110px"></mj-image>
+      </mj-column>
+    </mj-section>
+    <mj-section text-align="center" padding="0 0 0 0">
+      <mj-column>
+        <mj-text align="left" color="#44475d" padding-bottom="20px" font-family="Arial, sans-serif" font-size="16px">
+          <b>{{sendersName}}</b> has invited you to join a file <b>{{fileName}}</b> on Space.
+        </mj-text>
+        <mj-button background-color="#171717" href="{{inviteLink}}">Accept Invite</mj-button>
+        <mj-text align="left" color="#44475d" padding-bottom="20px" padding-top="20px" font-family="Arial, sans-serif" font-size="16px">
+          If you are unable to click the copy, you can also copy and paste this link into your browser to accept:
+          <a href="{{inviteLink}}">
+            {{inviteLink}}
+          </a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+     <mj-section text-align="center" padding="0 0 0 0">
+      <mj-column>
+        <mj-text align="center" color="#44475d" padding-top="20px" font-family="Arial, sans-serif" font-size="13px">
+          If you feel you got this email out of error, kindly ignore
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

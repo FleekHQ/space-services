@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult, APIGatewayProxyEventBase } from 'aws-lambda';
-import createDbModel from '@packages/models/dist/billing';
+import { createBillingModel } from '@packages/models';
 import { accountResponse } from './utils/responses';
 
 if (!process?.env?.ENV) {
@@ -7,7 +7,7 @@ if (!process?.env?.ENV) {
 }
 
 const STAGE = process.env.ENV;
-const dbModel = createDbModel(STAGE);
+const dbModel = createBillingModel(STAGE);
 
 export interface AuthContext {
   uuid: string;

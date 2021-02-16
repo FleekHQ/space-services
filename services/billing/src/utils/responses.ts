@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { AccountWithBilling } from '@packages/models/dist/billing';
+import { AccountWithBilling } from '@packages/models';
 
 // eslint-disable-next-line
 export const accountResponse = (accountWithBilling: AccountWithBilling) =>

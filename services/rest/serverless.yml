@@ -21,6 +21,11 @@ provider:
             - ''
             - - Fn::ImportValue: 'AppDynamoDbTableArn-${self:provider.stage}'
               - '/*'
+    - Effect: Allow
+      Action:
+        - SES:SendEmail
+        - SES:SendRawEmail
+      Resource: '*'
   domain:
     dev: api-dev.space.storage
     stg: api-stg.space.storage
@@ -142,6 +147,27 @@ functions:
           request:
             schema:
               application/json: ${file(schemas/addEthAddress.json)}
+
+  share:
+    memorySize: 128
+    handler: dist/share.handler
+    environment:
+      REGION: ${self:provider.region}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          path: /share
+          method: POST
+          cors: true
+          authorizer:
+            name: authorizer
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
+          # request:
+          #   schema:
+          #     application/json: ${file(schemas/addEthAddress.json)}
+
   uploadAvatar:
     memorySize: 128
     handler: dist/uploadAvatar.handler
