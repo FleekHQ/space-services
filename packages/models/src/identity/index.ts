@@ -103,9 +103,9 @@ export class IdentityModel extends BaseModel {
     dn: string
   ): Promise<IdentityRecord[]> {
     const KeyConditionExpression: DocumentClient.KeyExpression =
-      'pk = :displayName';
+      'displayName = :name';
     const ExpressionAttributeValues: DocumentClient.ExpressionAttributeValueMap = {
-      ':displayName': `${dn}`,
+      ':name': `${dn}`,
     };
 
     const params = {
@@ -353,18 +353,21 @@ export class IdentityModel extends BaseModel {
   public async getIdentities(
     query: GetIdentitiesQuery[]
   ): Promise<IdentityRecord[]> {
-    let ps: Promise<IdentityRecord>[];
-    let dpp: Promise<IdentityRecord[]>[];
+    const ps: Promise<IdentityRecord>[] = [];
+    const dpp: Promise<IdentityRecord[]>[] = [];
 
     query.forEach(q => {
       if (q.type === GetIdentityQueryType.username) {
         ps.push(this.getIdentityByUsername(q.value));
+        return;
       }
       if (q.type === GetIdentityQueryType.email) {
         ps.push(this.getIdentityByEmail(q.value));
+        return;
       }
       if (q.type === GetIdentityQueryType.displayName) {
         dpp.push(this.getIdentitiesByDisplayName(q.value));
+        return;
       }
 
       throw new Error('Incompatible query type');
