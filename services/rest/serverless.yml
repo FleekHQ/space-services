@@ -150,7 +150,7 @@ functions:
 
   share:
     memorySize: 128
-    handler: dist/share.handler
+    handler: dist/sendShareEmail.handler
     environment:
       REGION: ${self:provider.region}
       ENV: ${opt:stage}
