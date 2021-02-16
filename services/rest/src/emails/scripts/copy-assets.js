@@ -2,4 +2,4 @@
 const shell = require('shelljs');
 
 // Copy all the view templates
-shell.cp('-R', 'src/emails/compiled-htmls', 'dist/');
+shell.cp('-R', 'src/emails/compiledHtmls', 'dist/emails/');

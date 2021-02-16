@@ -10,7 +10,7 @@
     "dist"
   ],
   "scripts": {
-    "copy-assets": "node emails/scripts/copy-assets",
+    "copy-assets": "node src/emails/scripts/copy-assets",
     "build": "npm run clean && npm run compile && npm run copy-assets",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
