@@ -1,30 +1,41 @@
 <mjml>
-  <mj-body background-color="#FFFFFF">
-    <mj-section text-align="left">
-      <mj-column>
-        <mj-image href="https://space.storage" align="left" border="none" padding="10px 25px" src="https://space.storage/images/Space.svg" target="_blank" title="" width="110px"></mj-image>
-      </mj-column>
+  <mj-head>
+    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,400;1,500&display=swap" />
+  </mj-head>
+  <mj-body>
+    <mj-wrapper background-color="#151515" padding="60px">
+      <mj-section>
+        <mj-column padding-bottom="10px" width="100%">
+          <mj-image width="180px" href="https://space.storage" align="center" border="none" src="https://fleek-team-bucket.storage.fleek.co/space-emails/space-with-text.svg" target="_blank" title=""></mj-image>
+        </mj-column>
+      </mj-section>
+      <mj-section border-radius="12px" background-color="transparent linear-gradient(180deg, #303030 0%, #1A1A1A 100%) 0% 0% no-repeat padding-box" text-align="center" padding="34px 0px 42px 0">
+        <mj-column width="477px">
+          <mj-image width="77px" src="https://fleek-team-bucket.storage.fleek.co/space-emails/doc-icon.svg" />
+          <mj-text line-height="24px" align="center" color="#ffffff" font-family="'Work Sans', sans-serif" font-size="18px">
+            {{sendersName}} shared a file with you. </br>{{fileName}}
+          </mj-text>
+          <mj-button width="347px" height="55px" font-weight="500" font-size="18px" background-color="#006EFF" href="{{inviteLink}}">Open in Space</mj-button>
+        </mj-column>
+        <mj-column width="331px">
+          <mj-text padding="20px 40px" line-height="24px" align="center" color="#ffffff" font-family="'Work Sans', sans-serif" font-size="18px">
+            Sign-in to your account to save this file in your Space.
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
     </mj-section>
-    <mj-section text-align="center" padding="0 0 0 0">
-      <mj-column>
-        <mj-text align="left" color="#44475d" padding-bottom="20px" font-family="Arial, sans-serif" font-size="16px">
-          <b>{{sendersName}}</b> has invited you to join a file <b>{{fileName}}</b> on Space.
-        </mj-text>
-        <mj-button background-color="#171717" href="{{inviteLink}}">Accept Invite</mj-button>
-        <mj-text align="left" color="#44475d" padding-bottom="20px" padding-top="20px" font-family="Arial, sans-serif" font-size="16px">
-          If you are unable to click the copy, you can also copy and paste this link into your browser to accept:
-          <a href="{{inviteLink}}">
-            {{inviteLink}}
-          </a>
-        </mj-text>
-      </mj-column>
-    </mj-section>
-     <mj-section text-align="center" padding="0 0 0 0">
-      <mj-column>
-        <mj-text align="center" color="#44475d" padding-top="20px" font-family="Arial, sans-serif" font-size="13px">
-          If you feel you got this email out of error, kindly ignore
-        </mj-text>
-      </mj-column>
-    </mj-section>
+    <mj-section background-color="#202020" text-align="center">
+    <mj-column width="100%">
+      <mj-text align="center" color="#ffffff" font-family="'Work Sans', sans-serif" font-size="18px">
+        Follow us
+      </mj-text>
+      <mj-social icon-size="34px" icon-padding="3px" mode="horizontal">
+        <mj-social-element src="https://fleek-team-bucket.storage.fleek.co/space-emails/slack2.png" href="https://slack.fleek.co" />
+        <mj-social-element src="https://fleek-team-bucket.storage.fleek.co/space-emails/github3.png" href="https://github.com/fleekhq" />
+        <mj-social-element src="https://fleek-team-bucket.storage.fleek.co/space-emails/twitter2.png" href="https://twitter.com/FleekHQ" />
+      </mj-social>
+    </mj-column>
+  </mj-section>
   </mj-body>
 </mjml>
