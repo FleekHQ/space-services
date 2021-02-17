@@ -37,7 +37,7 @@ const shareInvitationEmail = (
     sendersName: `${data.data.senderName}`,
     fileName: data.data.fileName,
     inviteLink: data.data.invitationLink,
-    fileIcon: getFileIcon(data.data.fileName),
+    fileIconUrl: getFileIcon(data.data.fileName),
   };
 
   const html = parseTemplateVars(htmlTemplate, templateVars);

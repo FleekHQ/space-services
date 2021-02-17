@@ -11,7 +11,7 @@
       </mj-section>
       <mj-section border-radius="12px" background-color="transparent linear-gradient(180deg, #303030 0%, #1A1A1A 100%) 0% 0% no-repeat padding-box" text-align="center" padding="34px 0px 42px 0">
         <mj-column width="477px">
-          <mj-image width="77px" src="https://fleek-team-bucket.storage.fleek.co/space-emails/doc-icon.svg" />
+          <mj-image width="77px" src="{{fileIconUrl}}" />
           <mj-text line-height="24px" align="center" color="#ffffff" font-family="'Work Sans', sans-serif" font-size="18px">
             {{sendersName}} shared a file with you. </br>{{fileName}}
           </mj-text>
