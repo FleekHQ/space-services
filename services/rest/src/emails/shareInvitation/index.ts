@@ -22,10 +22,12 @@ const iconTypeMapping = {
   [FILE_TYPES.POWERPOINT]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Presentation.svg',
 };
 
+interface Mapping { [key: string]:string };
+
 const getFileIcon = (filename: string) => {
   const splitName = filename.split(".");
   const ext = splitName[splitName.length - 1];
-  const fileType = MAP_EXT_TO_FILE_TYPE[ext] || MAP_EXT_TO_FILE_TYPE.default;
+  const fileType = (<Mapping>MAP_EXT_TO_FILE_TYPE)[ext];
   const iconUrl = iconTypeMapping[fileType];
   return iconUrl;
 };
