@@ -11,15 +11,15 @@ const htmlTemplate = fs.readFileSync(
 );
 
 const iconTypeMapping = {
-  [FILE_TYPES.FOLDER]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Unknown.svg',
-  [FILE_TYPES.IMAGE]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Image.svg',
-  [FILE_TYPES.PDF]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/PDF.svg',
-  [FILE_TYPES.ZIP]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/ZIP.svg',
-  [FILE_TYPES.WORD]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/TextDoc.svg',
-  [FILE_TYPES.VIDEO]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Video.svg',
-  [FILE_TYPES.AUDIO]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Audio.svg',
-  [FILE_TYPES.DEFAULT]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Unknown.svg',
-  [FILE_TYPES.POWERPOINT]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Presentation.svg',
+  [FILE_TYPES.FOLDER]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Unknown.png',
+  [FILE_TYPES.IMAGE]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Image.png',
+  [FILE_TYPES.PDF]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/PDF.png',
+  [FILE_TYPES.ZIP]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/ZIP.png',
+  [FILE_TYPES.WORD]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/TextDoc.png',
+  [FILE_TYPES.VIDEO]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Video.png',
+  [FILE_TYPES.AUDIO]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Audio.png',
+  [FILE_TYPES.DEFAULT]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Unknown.png',
+  [FILE_TYPES.POWERPOINT]: 'https://fleek-team-bucket.storage.fleek.co/space-emails/file-icons/Presentation.png',
 };
 
 interface Mapping { [key: string]:string };

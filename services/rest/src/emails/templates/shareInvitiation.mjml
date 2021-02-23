@@ -6,7 +6,7 @@
     <mj-wrapper background-color="#151515" padding="60px">
       <mj-section>
         <mj-column padding-bottom="10px" width="100%">
-          <mj-image width="180px" href="https://space.storage" align="center" border="none" src="https://fleek-team-bucket.storage.fleek.co/space-emails/space-with-text.svg" target="_blank" title=""></mj-image>
+          <mj-image width="180px" href="https://space.storage" align="center" border="none" src="https://fleek-team-bucket.storage.fleek.co/space-with-text.png" target="_blank" title=""></mj-image>
         </mj-column>
       </mj-section>
       <mj-section border-radius="12px" background-color="transparent linear-gradient(180deg, #303030 0%, #1A1A1A 100%) 0% 0% no-repeat padding-box" text-align="center" padding="34px 0px 42px 0">
