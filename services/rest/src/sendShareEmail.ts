@@ -16,15 +16,15 @@ const ses = new AWS.SES({ region: 'us-west-2' });
 export const handler = middy(async function(
   event: APIGatewayProxyEventBase<AuthContext>
 ): Promise<APIGatewayProxyResult> {
-  const { mail } = JSON.parse(event.body);
+  const data = JSON.parse(event.body);
 
-  const emailBody: EmailBody = render(mail);
+  const emailBody: EmailBody = render(data);
 
   let ToAddresses;
-  if (Array.isArray(mail.toAddresses)) {
-    ToAddresses = mail.toAddresses;
+  if (Array.isArray(data.toAddresses)) {
+    ToAddresses = data.toAddresses;
   } else {
-    ToAddresses = [mail.toAddresses];
+    ToAddresses = [data.toAddresses];
   }
 
   const params: AWS.SES.SendEmailRequest = {
