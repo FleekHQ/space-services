@@ -33,14 +33,8 @@ provider:
         - "arn:aws:appsync:us-west-2:768127979193:apis/${self:provider.appSyncId.${self:provider.stage}}/types/*/fields/*"
     - Effect: Allow 
       Action: 
-        - kinesis:DescribeStream
         - kinesis:PutRecord
         - kinesis:PutRecords
-        - kinesis:GetShardIterator
-        - kinesis:GetRecords
-        - kinesis:ListShards
-        - kinesis:DescribeStreamSummary
-        - kinesis:RegisterStreamConsumer
       Resource: 
        - "arn:aws:kinesis:us-west-2:768127979193:stream/filecoin-archive-${self:provider.stage}"
   domain:
