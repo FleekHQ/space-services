@@ -117,6 +117,8 @@ export class IdentityModel extends BaseModel {
 
     const result = await this.query(params);
 
+    console.log('getIdentitiesByDisplayName: ', result);
+
     return result.Items.map(parseDbObjectToIdentity);
   }
 
@@ -375,6 +377,8 @@ export class IdentityModel extends BaseModel {
 
     const results = await Promise.all(ps);
     const dpResults = await Promise.all(dpp);
+
+    console.log('dpResults: ', dpResults);
 
     if (dpResults.length > 0) {
       dpResults.forEach(a => {
