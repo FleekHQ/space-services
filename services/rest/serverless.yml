@@ -189,9 +189,6 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
             resultTtlInSeconds: 0
-          # request:
-          #   schema:
-          #     application/json: ${file(schemas/addEthAddress.json)}
 
   archiveHash:
     memorySize: 128
@@ -201,7 +198,7 @@ functions:
       ENV: ${opt:stage}
     events:
       - http:
-          path: /share
+          path: /archiveHash
           method: POST
           cors: true
           authorizer:
@@ -209,9 +206,6 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
             resultTtlInSeconds: 0
-          # request:
-          #   schema:
-          #     application/json: ${file(schemas/addEthAddress.json)}
 
   dealStatus:
     memorySize: 128
@@ -230,9 +224,6 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
             resultTtlInSeconds: 0
-          # request:
-          #   schema:
-          #     application/json: ${file(schemas/addEthAddress.json)}
 
   uploadAvatar:
     memorySize: 128
@@ -285,4 +276,3 @@ resources:
         ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: 'ApiGatewayRestApi'
-          
