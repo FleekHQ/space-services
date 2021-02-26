@@ -30,7 +30,7 @@ provider:
       Action:
         - "appsync:Graphql"
       Resource:
-        - "arn:aws:appsync:us-west-2:768127979193:apis/${self.provider.appSyncId.${self.provider.stage}}/types/*/fields/*"
+        - "arn:aws:appsync:us-west-2:768127979193:apis/${self:provider.appSyncId.${self:provider.stage}}/types/*/fields/*"
     - Effect: Allow 
       Action: 
         - kinesis:DescribeStream
@@ -42,7 +42,7 @@ provider:
         - kinesis:DescribeStreamSummary
         - kinesis:RegisterStreamConsumer
       Resource: 
-       - Fn::GetAtt: ['dataStream', 'Arn']
+       - "arn:aws:kinesis:us-west-2:768127979193:stream/filecoin-archive-${self:provider.stage}"
   domain:
     dev: api-dev.space.storage
     stg: api-stg.space.storage
@@ -219,7 +219,7 @@ functions:
     environment:
       REGION: ${self:provider.region}
       ENV: ${opt:stage}
-      APPSYNC_URL: ${self.provider.appsyncUrl.${self:provider.stage}}
+      APPSYNC_URL: ${self:provider.appsyncUrl.${self:provider.stage}}
     events:
       - http:
           path: /dealStatus
@@ -285,8 +285,4 @@ resources:
         ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: 'ApiGatewayRestApi'
-    dataStream:
-      Type: AWS::Kinesis::Stream
-      Properties:
-        Name: filecoin-archive-${opt:stage}
-        ShardCount: 1
+          
