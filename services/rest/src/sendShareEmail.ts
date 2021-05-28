@@ -40,7 +40,7 @@ export const handler = middy(async function(
       },
       Subject: { Data: emailBody.subject },
     },
-    Source: emailBody.from || 'Space <hi@space.storage>',
+    Source: emailBody.from || 'Space <hey@space.storage>',
   };
 
   try {

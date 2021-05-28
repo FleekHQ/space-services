@@ -26,10 +26,29 @@ provider:
         - SES:SendEmail
         - SES:SendRawEmail
       Resource: '*'
+    - Effect: Allow
+      Action:
+        - "appsync:Graphql"
+      Resource:
+        - "arn:aws:appsync:us-west-2:768127979193:apis/${self:provider.appSyncId.${self:provider.stage}}/types/*/fields/*"
+    - Effect: Allow 
+      Action: 
+        - kinesis:PutRecord
+        - kinesis:PutRecords
+      Resource: 
+       - "arn:aws:kinesis:us-west-2:768127979193:stream/filecoin-archive-${self:provider.stage}"
   domain:
     dev: api-dev.space.storage
     stg: api-stg.space.storage
     prd: api.space.storage
+  appsyncUrl:
+    dev: https://7w65cjs2fnbwzdsltmxj427wfu.appsync-api.us-west-2.amazonaws.com/graphql
+    stg: https://h6qbvxquqjg5direndhm7ugaj4.appsync-api.us-west-2.amazonaws.com/graphql
+    prd: https://b6756lokszgovfg2lkge3t4kai.appsync-api.us-west-2.amazonaws.com/graphql
+  appSyncId:
+    dev: 5hfpy7azrrbwzfqlworbze5cqm
+    stg: eqz6jpndcvg27fhrcmzzdb7byi
+    prd: tbnqabijsrasxp6sokt4y3avxu
 
 plugins:
   - serverless-jetpack
@@ -164,9 +183,41 @@ functions:
             identitySource: method.request.header.Authorization
             type: token
             resultTtlInSeconds: 0
-          # request:
-          #   schema:
-          #     application/json: ${file(schemas/addEthAddress.json)}
+
+  archiveHash:
+    memorySize: 128
+    handler: dist/archiveHash.handler
+    environment:
+      REGION: ${self:provider.region}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          path: /archiveHash
+          method: POST
+          cors: true
+          authorizer:
+            name: authorizer
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
+
+  dealStatus:
+    memorySize: 128
+    handler: dist/getDealStatus.handler
+    environment:
+      REGION: ${self:provider.region}
+      ENV: ${opt:stage}
+      APPSYNC_URL: ${self:provider.appsyncUrl.${self:provider.stage}}
+    events:
+      - http:
+          path: /dealStatus
+          method: GET
+          cors: true
+          authorizer:
+            name: authorizer
+            identitySource: method.request.header.Authorization
+            type: token
+            resultTtlInSeconds: 0
 
   uploadAvatar:
     memorySize: 128
